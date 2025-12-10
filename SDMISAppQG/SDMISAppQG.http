@@ -1,0 +1,6 @@
+@SDMISAppQG_HostAddress = http://localhost:5078
+
+GET {{SDMISAppQG_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

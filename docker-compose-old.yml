@@ -7,17 +7,23 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      # - ./init:/docker-entrypoint-initdb.d
+      - ./init:/docker-entrypoint-initdb.d
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-  sdmisappqg:
-    image: ${DOCKER_REGISTRY-}sdmisappqg
-    container_name: sdmisappqg-backend
-    depends_on:
-      - db
+
+  backend:
     build:
       context: .
       dockerfile: SDMISAppQG/Dockerfile
+    container_name: sdmisappqg-backend
+    depends_on:
+      - db
+    ports:
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+  
+
 volumes:
   pgdata:

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using SDMISAppQG.Models;
+using SDMISAppQG.Models.Entities;
 
 namespace SDMISAppQG.Database; 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options) {

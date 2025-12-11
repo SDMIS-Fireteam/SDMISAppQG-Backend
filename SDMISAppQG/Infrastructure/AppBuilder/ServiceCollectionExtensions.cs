@@ -22,7 +22,9 @@ public static class ServiceCollectionExtensions {
       dataSourceBuilder.UseJsonNet();
       NpgsqlDataSource dataSource = dataSourceBuilder.Build();
       services.AddDbContext<AppDbContext>(options => {
-         options.UseNpgsql(dataSource);
+         options.UseNpgsql(dataSource, npgsqlOptions => {
+            npgsqlOptions.UseNetTopologySuite();
+         });
       });
       return services;
    }

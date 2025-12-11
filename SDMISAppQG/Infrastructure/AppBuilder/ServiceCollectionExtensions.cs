@@ -1,12 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using SDMISAppQG.Database;
+using SDMISAppQG.Infrastructure.Workers;
 
 namespace SDMISAppQG.Infrastructure.AppBuilder; 
 public static class ServiceCollectionExtensions {
    public static IServiceCollection AddAppServices(this IServiceCollection services, IConfiguration configuration) {
       // Configuration de la base de donnée
       services.AddPostgresDatabase(configuration);
+
+      services.AddHostedService<GpsWorker>();
       return services;
    }
 

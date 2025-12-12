@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SDMISAppQG.Models.Entities; 
 public class IncidentEntity : BaseEntity {
-   public IncidentType Type { get; set; }
+   public required IncidentTypeEntity Type { get; set; }
    [Column(TypeName = "geography(Point, 4326)")]
    public required Point Location { get; set; }
    public IncidentSeverity Severity { get; set; }

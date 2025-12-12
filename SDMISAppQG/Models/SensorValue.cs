@@ -1,6 +1,6 @@
 ﻿using SDMISAppQG.Models.Enums;
 
-namespace SDMISAppQG.Models.Entities; 
+namespace SDMISAppQG.Models; 
 /// <summary>
 /// Représente une valeur d'un capteur à un instant donné
 /// </summary>

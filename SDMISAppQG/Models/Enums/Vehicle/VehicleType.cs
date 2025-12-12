@@ -2,6 +2,7 @@
 
 namespace SDMISAppQG.Models.Enums.Vehicle;
 
+[Obsolete("Plus utilisé pour l'instant")]
 public enum VehicleType {
    [Description("Non défini")]
    Inconnu = 0,

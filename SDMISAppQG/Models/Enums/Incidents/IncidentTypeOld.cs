@@ -1,6 +1,7 @@
 ﻿namespace SDMISAppQG.Models.Enums.Incidents;
 
-public enum IncidentType {
+[Obsolete("Plus utilisé pour l'instant")]
+public enum IncidentTypeOld {
    // ==========================================
    // 100 SERIES: FIRE (Incendies)
    // ==========================================

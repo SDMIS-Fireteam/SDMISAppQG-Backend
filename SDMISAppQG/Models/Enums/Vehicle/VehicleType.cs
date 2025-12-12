@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace SDMISAppQG.Models.Enums;
+namespace SDMISAppQG.Models.Enums.Vehicle;
 
 public enum VehicleType {
    [Description("Non défini")]

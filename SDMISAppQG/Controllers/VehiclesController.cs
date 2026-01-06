@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDMISAppQG.Database;
@@ -5,6 +6,7 @@ using SDMISAppQG.Models.Entities;
 
 namespace SDMISAppQG.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class VehiclesController : ControllerBase {

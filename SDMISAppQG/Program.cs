@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Scalar.AspNetCore;
@@ -18,6 +20,38 @@ builder.Services
          options.SerializerSettings.Converters.Add(converter);
       }
    });
+
+// Configuration de l'authentification JWT avec Keycloak
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+   .AddJwtBearer(options => {
+      var keycloakConfig = builder.Configuration.GetSection("Keycloak");
+
+      options.Authority = keycloakConfig["Authority"];
+      options.Audience = keycloakConfig["Audience"];
+      options.RequireHttpsMetadata = keycloakConfig.GetValue<bool>("RequireHttpsMetadata");
+
+      options.TokenValidationParameters = new TokenValidationParameters {
+         ValidateIssuer = keycloakConfig.GetValue<bool>("ValidateIssuer"),
+         ValidateAudience = keycloakConfig.GetValue<bool>("ValidateAudience"),
+         ValidateLifetime = true,
+         ValidateIssuerSigningKey = true,
+         ClockSkew = TimeSpan.Zero
+      };
+
+      options.Events = new JwtBearerEvents {
+         OnAuthenticationFailed = context => {
+            Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+            return Task.CompletedTask;
+         },
+         OnTokenValidated = context => {
+            Console.WriteLine("Token validated successfully");
+            return Task.CompletedTask;
+         }
+      };
+   });
+
+builder.Services.AddAuthorization();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSignalR();
@@ -44,9 +78,16 @@ if (app.Environment.IsDevelopment()) {
    app.UseHttpsRedirection();
 }
 
+app.UseCors("ReactClientPermission");
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<GpsHub>("/hubs/gps");
+
+await app.RunAsync();
 
 app.UseCors("ReactClientPermission");
 

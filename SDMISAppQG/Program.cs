@@ -1,3 +1,5 @@
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 using Scalar.AspNetCore;
 using SDMISAppQG.Hubs;
 using SDMISAppQG.Infrastructure.AppBuilder;
@@ -8,7 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
    .AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)
-   .AddNewtonsoftJson();
+   .AddNewtonsoftJson(options => {
+      // Configuration pour NetTopologySuite (géométries PostGIS)
+      var geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+      var geoJsonSerializer = GeoJsonSerializer.Create(geometryFactory);
+      foreach (var converter in geoJsonSerializer.Converters) {
+         options.SerializerSettings.Converters.Add(converter);
+      }
+   });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSignalR();

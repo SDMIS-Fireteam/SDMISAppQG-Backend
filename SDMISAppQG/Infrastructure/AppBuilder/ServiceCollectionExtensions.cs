@@ -20,6 +20,8 @@ public static class ServiceCollectionExtensions {
       NpgsqlDataSourceBuilder dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
       // Utilisation de NewtonSoft pour les colonnes Json
       dataSourceBuilder.UseJsonNet();
+      // Configuration de NetTopologySuite pour les colonnes géographiques
+      dataSourceBuilder.UseNetTopologySuite();
       NpgsqlDataSource dataSource = dataSourceBuilder.Build();
       services.AddDbContext<AppDbContext>(options => {
          options.UseNpgsql(dataSource, npgsqlOptions => {

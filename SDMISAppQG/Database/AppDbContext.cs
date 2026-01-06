@@ -5,6 +5,13 @@ using SDMISAppQG.Models.Entities;
 namespace SDMISAppQG.Database; 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options) {
 
+   public DbSet<VehicleEntity> Vehicles { get; set; }
+   public DbSet<IncidentEntity> Incidents { get; set; }
+   public DbSet<InterventionEntity> Interventions { get; set; }
+   public DbSet<UserEntity> Users { get; set; }
+   public DbSet<IncidentTypeEntity> IncidentTypes { get; set; }
+   public DbSet<VehicleTypeEntity> VehicleTypes { get; set; }
+
    public override int SaveChanges() {
       GenerateTimestamps();
       return base.SaveChanges();

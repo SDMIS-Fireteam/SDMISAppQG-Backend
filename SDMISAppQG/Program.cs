@@ -86,11 +86,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<GpsHub>("/hubs/gps");
-
-await app.RunAsync();
-
-app.UseCors("ReactClientPermission");
-
-app.MapHub<GpsHub>("/hubs/gps");
+app.MapHub<TelemetryHub>("/hubs/telemetry");
 
 await app.RunAsync();

@@ -1,4 +1,4 @@
 ﻿namespace SDMISAppQG.Interfaces.Hubs; 
 public interface IGpsClient {
-   Task ReceivePosition(double lat, double lng);
+   Task ReceivePosition(Guid vehicleId, double lat, double lng);
 }

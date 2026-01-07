@@ -11,6 +11,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
    public DbSet<UserEntity> Users { get; set; }
    public DbSet<IncidentTypeEntity> IncidentTypes { get; set; }
    public DbSet<VehicleTypeEntity> VehicleTypes { get; set; }
+   public DbSet<TelemetryLogsEntity> TelemetryLogs { get; set; }
 
    public override int SaveChanges() {
       GenerateTimestamps();

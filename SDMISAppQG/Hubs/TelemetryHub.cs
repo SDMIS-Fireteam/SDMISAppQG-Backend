@@ -40,6 +40,12 @@ public class TelemetryHub : Hub
     {
         var telemetryData = System.Text.Json.JsonSerializer.Deserialize<TelemetryData>(data);
 
+        if (telemetryData == null)
+        {
+            _logger.LogWarning("Données de télémétrie invalides reçues: {Data}", data);
+            return;
+        }
+
         _logger.LogInformation("ReceiveTelemetry appelé - ConnectionId: {ConnectionId}", Context.ConnectionId);
         try
         {
@@ -56,7 +62,6 @@ public class TelemetryHub : Hub
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erreur lors du traitement des données de télémétrie pour le camion IdHardware={IdHardware}", telemetryData?.IdHardware);
-            throw;
         }
     }
 }

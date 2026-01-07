@@ -92,6 +92,7 @@ public class TelemetryService
         var telemetryLog = new TelemetryLogsEntity
         {
             Id = Guid.NewGuid(),
+            CreatedAt = DateTime.UtcNow,
             VehicleId = vehicle.Id,
             Position = point,
             Timestamp = DateTime.UtcNow,

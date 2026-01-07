@@ -12,13 +12,13 @@ public class TelemetryData
     /// </summary>
     [JsonPropertyName("idHardware")]
     public int IdHardware { get; set; }
-    
+
     [JsonPropertyName("latitude")]
     public double Latitude { get; set; }
-    
+
     [JsonPropertyName("longitude")]
     public double Longitude { get; set; }
-    
+
     [JsonPropertyName("levels")]
     public Dictionary<string, double>? Levels { get; set; }
 }

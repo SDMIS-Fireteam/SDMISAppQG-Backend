@@ -18,7 +18,7 @@ namespace SDMISAppQG.Migrations
                 nullable: true,
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone");
-            
+
             migrationBuilder.AddColumn<Guid>(
                 name: "VehicleId",
                 table: "Interventions",

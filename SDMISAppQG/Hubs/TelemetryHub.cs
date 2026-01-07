@@ -20,18 +20,42 @@ public class TelemetryHub : Hub
         _logger = logger;
     }
 
+    public override async Task OnConnectedAsync()
+    {
+        _logger.LogInformation("Client Python connecté: {ConnectionId}", Context.ConnectionId);
+        await base.OnConnectedAsync();
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        _logger.LogInformation("Client Python déconnecté: {ConnectionId}", Context.ConnectionId);
+        await base.OnDisconnectedAsync(exception);
+    }
+
     /// <summary>
     /// Méthode appelée par la passerelle Python pour envoyer des données de télémétrie
+    /// Accepte les paramètres individuellement pour compatibilité avec le client Python
     /// </summary>
-    public async Task ReceiveTelemetry(TelemetryData telemetryData)
+    public async Task ReceiveTelemetry(string data)
     {
+        var telemetryData = System.Text.Json.JsonSerializer.Deserialize<TelemetryData>(data);
+
+        _logger.LogInformation("ReceiveTelemetry appelé - ConnectionId: {ConnectionId}", Context.ConnectionId);
         try
         {
+
+            _logger.LogInformation("ReceiveTelemetry - Données reçues: IdHardware={IdHardware}, Lat={Lat}, Lng={Lng}, Levels={@Levels}",
+                telemetryData.IdHardware,
+                telemetryData.Latitude,
+                telemetryData.Longitude,
+                telemetryData.Levels);
+
             await _telemetryService.ProcessTelemetryAsync(telemetryData);
+            _logger.LogInformation("Télémétrie traitée avec succès pour le camion IdHardware={IdHardware}", telemetryData.IdHardware);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erreur lors du traitement des données de télémétrie");
+            _logger.LogError(ex, "Erreur lors du traitement des données de télémétrie pour le camion IdHardware={IdHardware}", telemetryData?.IdHardware);
             throw;
         }
     }

@@ -99,6 +99,38 @@ public class InterventionsController : ControllerBase {
       return NoContent();
    }
 
+   /// <summary>
+   /// Assigne un véhicule à un incident en créant une intervention
+   /// </summary>
+   [HttpPost("{incidentId}/createIntervention/{vehicleId}")]
+   public async Task<IActionResult> AssignVehicleToIncident(Guid incidentId, Guid vehicleId) {
+      var incident = await _context.Incidents.FindAsync(incidentId);
+      if (incident == null) {
+         return NotFound($"Incident with ID {incidentId} not found.");
+      }
+
+      var vehicle = await _context.Vehicles.FindAsync(vehicleId);
+      if (vehicle == null) {
+         return NotFound($"Vehicle with ID {vehicleId} not found.");
+      }
+
+      var intervention = new InterventionEntity {
+         Id = Guid.NewGuid(),
+         IncidentId = incidentId,
+         VehicleId = vehicleId,
+         Begin = DateTime.UtcNow,
+         End = null,
+         Status = Models.Enums.InterventionStatus.Pending,
+         ConfirmedAt = null,
+         ConfirmedBy = null,
+      };
+
+      _context.Interventions.Add(intervention);
+
+      await _context.SaveChangesAsync();
+      return NoContent();
+   }
+
    private async Task<bool> InterventionExists(Guid id) {
       return await _context.Interventions.AnyAsync(e => e.Id == id);
    }

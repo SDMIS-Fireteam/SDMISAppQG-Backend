@@ -7,8 +7,11 @@ namespace SDMISAppQG.Models.Telemetry;
 /// </summary>
 public class TelemetryData
 {
+    /// <summary>
+    /// ID Hardware du véhicule (identifiant du micro:bit)
+    /// </summary>
     [JsonPropertyName("truckId")]
-    public string TruckId { get; set; } = string.Empty;
+    public int IdHardware { get; set; }
     
     [JsonPropertyName("latitude")]
     public double Latitude { get; set; }

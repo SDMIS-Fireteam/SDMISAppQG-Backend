@@ -54,17 +54,22 @@ builder.Services.AddAuthorization();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.AddSignalR();
+
+// Configuration SignalR avec logging détaillé
+builder.Services.AddSignalR(options =>
+{
+   options.EnableDetailedErrors = true;
+});
 
 builder.Services.AddAppServices(builder.Configuration);
 
 // Configuration CORS (indispensable pour que React puisse se connecter)
 builder.Services.AddCors(options => {
    options.AddPolicy("ReactClientPermission", policy => {
-      policy.WithOrigins("http://localhost:5173") // L'URL de votre app React
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials(); // Important pour SignalR
+      policy.SetIsOriginAllowed(_ => true) // Permet toutes les origines (React + Python)
+         .AllowAnyHeader()
+         .AllowAnyMethod()
+         .AllowCredentials(); // Nécessaire pour SignalR
    });
 });
 

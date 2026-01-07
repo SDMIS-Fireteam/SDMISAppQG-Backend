@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using SDMISAppQG.Database;
 using SDMISAppQG.Hubs;
@@ -39,8 +40,8 @@ public class TelemetryService
             return;
         }
 
-        _logger.LogDebug("Données télémétrie reçues pour véhicule {TruckId}: ({Lat}, {Lng})",
-            telemetryData.TruckId,
+        _logger.LogDebug("Données télémétrie reçues pour véhicule IdHardware={IdHardware}: ({Lat}, {Lng})",
+            telemetryData.IdHardware,
             telemetryData.Latitude,
             telemetryData.Longitude);
 
@@ -53,8 +54,19 @@ public class TelemetryService
 
     private async Task BroadcastPositionToFrontend(TelemetryData data)
     {
+        // Récupération du véhicule pour obtenir son GUID
+        using var scope = _serviceScopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        var vehicle = await context.Vehicles.FirstOrDefaultAsync(v => v.IdHardware == data.IdHardware);
+        if (vehicle == null)
+        {
+            _logger.LogWarning("Impossible de diffuser la position: véhicule IdHardware={IdHardware} non trouvé", data.IdHardware);
+            return;
+        }
+
         await _gpsHubContext.Clients.All.ReceivePosition(
-            Guid.Parse(data.TruckId),
+            vehicle.Id,
             data.Latitude,
             data.Longitude);
     }
@@ -64,12 +76,11 @@ public class TelemetryService
         using var scope = _serviceScopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        // Recherche du véhicule
-        var vehicleId = Guid.Parse(data.TruckId);
-        var vehicle = await context.Vehicles.FindAsync(vehicleId);
+        // Recherche du véhicule par IdHardware
+        var vehicle = await context.Vehicles.FirstOrDefaultAsync(v => v.IdHardware == data.IdHardware);
         if (vehicle == null)
         {
-            _logger.LogWarning("Véhicule avec ID {VehicleId} non trouvé en base de données.", vehicleId);
+            _logger.LogWarning("Véhicule avec IdHardware={IdHardware} non trouvé en base de données.", data.IdHardware);
             return;
         }
 
@@ -81,7 +92,7 @@ public class TelemetryService
         var telemetryLog = new TelemetryLogsEntity
         {
             Id = Guid.NewGuid(),
-            VehicleId = vehicleId,
+            VehicleId = vehicle.Id,
             Position = point,
             Timestamp = DateTime.UtcNow,
             SensorsValues = data.Levels != null

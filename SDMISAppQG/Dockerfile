@@ -35,8 +35,8 @@ COPY --from=build /src/SDMISAppQG /src/SDMISAppQG
 COPY --from=build /root/.dotnet/tools /root/.dotnet/tools
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
-# Copy entrypoint script
+# Copy entrypoint script and convert line endings
 COPY SDMISAppQG/entrypoint.sh .
-RUN chmod +x entrypoint.sh
+RUN sed -i 's/\r$//' entrypoint.sh && chmod +x entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]

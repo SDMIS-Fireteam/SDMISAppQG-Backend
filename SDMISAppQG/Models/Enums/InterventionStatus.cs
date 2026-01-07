@@ -1,6 +1,6 @@
 ﻿namespace SDMISAppQG.Models.Enums; 
 public enum InterventionStatus {
-   Pendding,
+   Pending,
    Confirmed,
    Ongoing,
    Completed,

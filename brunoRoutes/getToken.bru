@@ -1,0 +1,32 @@
+meta {
+  name: getToken
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{keycloak_url}}/realms/sdmis/protocol/openid-connect/token
+  body: formUrlEncoded
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+}
+
+body:form-urlencoded {
+  grant_type: client_credentials
+  client_id: api-back
+  client_secret: wplGlBe82zGhVLluWSSJdN9i9arY6TCt
+}
+
+script:post-response {
+  const responseData = res.getBody();
+  bru.setEnvVar("access_token", responseData.access_token);
+  
+  console.log("Token saved to environment variable");
+}
+
+docs {
+  This request retrieves a list of users from the JSONPlaceholder API.
+}

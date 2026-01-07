@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "brunoRoutes",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

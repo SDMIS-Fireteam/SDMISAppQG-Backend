@@ -1,0 +1,16 @@
+meta {
+  name: getVehicules
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{api_url}}/api/vehicles
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

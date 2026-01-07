@@ -10,7 +10,7 @@ public class TelemetryData
     /// <summary>
     /// ID Hardware du véhicule (identifiant du micro:bit)
     /// </summary>
-    [JsonPropertyName("truckId")]
+    [JsonPropertyName("idHardware")]
     public int IdHardware { get; set; }
     
     [JsonPropertyName("latitude")]

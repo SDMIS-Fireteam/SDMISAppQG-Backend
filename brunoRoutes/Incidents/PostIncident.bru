@@ -1,0 +1,31 @@
+meta {
+  name: PostIncident
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{api_url}}/api/incidents
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "typeId": "00000000-0000-0000-0000-000000000001",
+    "location": {
+      "type": "Point",
+      "coordinates": [2.3522, 48.8566]
+    },
+    "severity": 1,
+    "priority": 5.5,
+    "status": 0,
+    "source": 0,
+    "description": "Accident de la route sur l'autoroute A1"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

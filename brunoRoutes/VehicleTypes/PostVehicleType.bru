@@ -1,0 +1,23 @@
+meta {
+  name: PostVehicleType
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{api_url}}/api/vehicletypes
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "label": "Camion Pompe",
+    "crewCapacity": 6
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

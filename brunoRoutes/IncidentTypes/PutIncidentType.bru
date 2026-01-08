@@ -1,0 +1,23 @@
+meta {
+  name: PutIncidentType
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{api_url}}/api/incidenttypes/00000000-0000-0000-0000-000000000001
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "label": "Incendie majeur",
+    "category": "Feu et Explosion"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

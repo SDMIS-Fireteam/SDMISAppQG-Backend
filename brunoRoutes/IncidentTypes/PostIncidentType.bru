@@ -1,0 +1,23 @@
+meta {
+  name: PostIncidentType
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{api_url}}/api/incidenttypes
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "label": "Incendie",
+    "category": "Feu"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

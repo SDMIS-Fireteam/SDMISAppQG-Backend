@@ -104,10 +104,16 @@ public class VehiclesController : ControllerBase
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException e)
+        catch (DbUpdateConcurrencyException)
         {
-
-            throw e;
+            if (!await _context.Vehicles.AnyAsync(e => e.Id == id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
         }
 
         return NoContent();
@@ -129,10 +135,5 @@ public class VehiclesController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
-    }
-
-    private async Task<bool> VehicleExists(Guid id)
-    {
-        return await _context.Vehicles.AnyAsync(e => e.Id == id);
     }
 }

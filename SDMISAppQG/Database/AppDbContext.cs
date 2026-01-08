@@ -87,8 +87,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         var vehicle2 = Guid.Parse("88888888-8888-8888-8888-888888888888");
         var vehicle3 = Guid.Parse("99999999-9999-9999-9999-999999999999");
 
-        var geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-
         modelBuilder.Entity<VehicleEntity>().HasData(
             new VehicleEntity
             {

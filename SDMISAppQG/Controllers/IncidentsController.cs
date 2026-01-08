@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDMISAppQG.Database;
+using SDMISAppQG.Models.DTOs;
 using SDMISAppQG.Models.Entities;
 
 namespace SDMISAppQG.Controllers;
@@ -49,9 +50,27 @@ public class IncidentsController : ControllerBase
     /// Crée un nouveau incident
     /// </summary>
     [HttpPost]
-    public async Task<ActionResult<IncidentEntity>> CreateIncident(IncidentEntity incident)
+    public async Task<ActionResult<IncidentEntity>> CreateIncident(CreateIncidentDto dto)
     {
-        incident.Id = Guid.NewGuid();
+        var incidentType = await _context.IncidentTypes.FindAsync(dto.TypeId);
+        if (incidentType == null)
+        {
+            return BadRequest($"Incident type with ID {dto.TypeId} not found.");
+        }
+
+        var incident = new IncidentEntity
+        {
+            Id = Guid.NewGuid(),
+            CreatedAt = DateTime.UtcNow,
+            Type = incidentType,
+            Location = dto.Location,
+            Severity = dto.Severity,
+            Priority = dto.Priority,
+            Status = dto.Status,
+            Source = dto.Source,
+            Description = dto.Description
+        };
+
         _context.Incidents.Add(incident);
         await _context.SaveChangesAsync();
 
@@ -62,14 +81,38 @@ public class IncidentsController : ControllerBase
     /// Met à jour un incident existant
     /// </summary>
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateIncident(Guid id, IncidentEntity incident)
+    public async Task<IActionResult> UpdateIncident(Guid id, UpdateIncidentDto dto)
     {
-        if (id != incident.Id)
+        var incident = await _context.Incidents.FindAsync(id);
+        if (incident == null)
         {
-            return BadRequest();
+            return NotFound();
         }
 
-        _context.Entry(incident).State = EntityState.Modified;
+        if (dto.TypeId.HasValue)
+        {
+            var incidentType = await _context.IncidentTypes.FindAsync(dto.TypeId.Value);
+            if (incidentType == null)
+            {
+                return BadRequest($"Incident type with ID {dto.TypeId.Value} not found.");
+            }
+            incident.Type = incidentType;
+        }
+
+        if (dto.Location != null)
+            incident.Location = dto.Location;
+        if (dto.Severity.HasValue)
+            incident.Severity = dto.Severity.Value;
+        if (dto.Priority.HasValue)
+            incident.Priority = dto.Priority.Value;
+        if (dto.Status.HasValue)
+            incident.Status = dto.Status.Value;
+        if (dto.Source.HasValue)
+            incident.Source = dto.Source.Value;
+        if (dto.Description != null)
+            incident.Description = dto.Description;
+
+        incident.UpdatedAt = DateTime.UtcNow;
 
         try
         {

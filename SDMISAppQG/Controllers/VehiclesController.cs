@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDMISAppQG.Database;
+using SDMISAppQG.Models.DTOs;
 using SDMISAppQG.Models.Entities;
 
 namespace SDMISAppQG.Controllers;
@@ -47,9 +48,25 @@ public class VehiclesController : ControllerBase
     /// Crée un nouveau véhicule
     /// </summary>
     [HttpPost]
-    public async Task<ActionResult<VehicleEntity>> CreateVehicle(VehicleEntity vehicle)
+    public async Task<ActionResult<VehicleEntity>> CreateVehicle(CreateVehicleDto dto)
     {
-        vehicle.Id = Guid.NewGuid();
+        if(await _context.Vehicles.AnyAsync(v => v.IdHardware == dto.IdHardware))
+        {
+            return BadRequest($"Vehicle with IdHardware {dto.IdHardware} already exists.");
+        }
+
+        var vehicle = new VehicleEntity
+        {
+            Id = Guid.NewGuid(),
+            CreatedAt = DateTime.UtcNow,
+            IdHardware = dto.IdHardware,
+            TypeId = dto.TypeId,
+            LastLocation = dto.LastLocation,
+            Availability = dto.Availability,
+            UnavailabilityReason = dto.UnavailabilityReason,
+            Fuel = dto.Fuel
+        };
+
         _context.Vehicles.Add(vehicle);
         await _context.SaveChangesAsync();
 
@@ -60,26 +77,37 @@ public class VehiclesController : ControllerBase
     /// Met à jour un véhicule existant
     /// </summary>
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateVehicle(Guid id, VehicleEntity vehicle)
+    public async Task<IActionResult> UpdateVehicle(Guid id, UpdateVehicleDto dto)
     {
-        if (id != vehicle.Id)
+        var vehicle = await _context.Vehicles.FindAsync(id);
+        if (vehicle == null)
         {
-            return BadRequest();
+            return NotFound();
         }
 
-        _context.Entry(vehicle).State = EntityState.Modified;
+        if (dto.IdHardware.HasValue)
+            vehicle.IdHardware = dto.IdHardware.Value;
+        if (dto.TypeId.HasValue)
+            vehicle.TypeId = dto.TypeId.Value;
+        if (dto.LastLocation != null)
+            vehicle.LastLocation = dto.LastLocation;
+        if (dto.Availability.HasValue)
+            vehicle.Availability = dto.Availability.Value;
+        if (dto.UnavailabilityReason.HasValue)
+            vehicle.UnavailabilityReason = dto.UnavailabilityReason.Value;
+        if (dto.Fuel.HasValue)
+            vehicle.Fuel = dto.Fuel.Value;
+
+        vehicle.UpdatedAt = DateTime.UtcNow;
 
         try
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException)
+        catch (DbUpdateConcurrencyException e)
         {
-            if (!await VehicleExists(id))
-            {
-                return NotFound();
-            }
-            throw;
+
+            throw e;
         }
 
         return NoContent();

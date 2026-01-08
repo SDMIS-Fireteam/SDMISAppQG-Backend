@@ -25,7 +25,7 @@ public class IncidentsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<IncidentEntity>>> GetIncidents()
     {
-        return await _context.Incidents.Include(i => i.Type).ToListAsync();
+        return await _context.Incidents.ToListAsync();
     }
 
     /// <summary>
@@ -35,7 +35,6 @@ public class IncidentsController : ControllerBase
     public async Task<ActionResult<IncidentEntity>> GetIncident(Guid id)
     {
         var incident = await _context.Incidents
-           .Include(i => i.Type)
            .FirstOrDefaultAsync(i => i.Id == id);
 
         if (incident == null)
@@ -62,7 +61,7 @@ public class IncidentsController : ControllerBase
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.UtcNow,
-            Type = incidentType,
+            TypeId = incidentType.Id,
             Location = dto.Location,
             Severity = dto.Severity,
             Priority = dto.Priority,
@@ -89,14 +88,14 @@ public class IncidentsController : ControllerBase
             return NotFound();
         }
 
-        if (dto.TypeId.HasValue)
+        if (dto.TypeId != null)
         {
             var incidentType = await _context.IncidentTypes.FindAsync(dto.TypeId.Value);
             if (incidentType == null)
             {
                 return BadRequest($"Incident type with ID {dto.TypeId.Value} not found.");
             }
-            incident.Type = incidentType;
+            incident.TypeId = incidentType.Id;
         }
 
         if (dto.Location != null)

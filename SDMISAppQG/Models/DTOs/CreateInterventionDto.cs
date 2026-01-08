@@ -8,7 +8,6 @@ namespace SDMISAppQG.Models.DTOs;
 public class CreateInterventionDto
 {
     public required Guid IncidentId { get; set; }
-    public Guid? VehicleId { get; set; }
     public required DateTime Begin { get; set; }
     public DateTime? End { get; set; }
     public required InterventionStatus Status { get; set; }

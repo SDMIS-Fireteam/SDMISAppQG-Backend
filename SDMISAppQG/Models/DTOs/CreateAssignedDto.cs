@@ -4,11 +4,9 @@ namespace SDMISAppQG.Models.DTOs;
 
 public class CreateAssignedDto
 {
-    [Required]
-    public Guid InterventionId { get; set; }
+    public required Guid InterventionId { get; set; }
     
-    [Required]
-    public Guid VehicleId { get; set; }
+    public required Guid VehicleId { get; set; }
     
     public string? Itinerary { get; set; }
     

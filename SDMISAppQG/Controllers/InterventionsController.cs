@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SDMISAppQG.Database;
 using SDMISAppQG.Models.DTOs;
 using SDMISAppQG.Models.Entities;
+using SDMISAppQG.Models.Enums;
 
 namespace SDMISAppQG.Controllers;
 
@@ -66,7 +67,6 @@ public class InterventionsController : ControllerBase
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.UtcNow,
             IncidentId = dto.IncidentId,
-            VehicleId = dto.VehicleId,
             Begin = dto.Begin,
             End = dto.End,
             Status = dto.Status,
@@ -94,8 +94,6 @@ public class InterventionsController : ControllerBase
 
         if (dto.IncidentId.HasValue)
             intervention.IncidentId = dto.IncidentId.Value;
-        if (dto.VehicleId.HasValue)
-            intervention.VehicleId = dto.VehicleId.Value;
         if (dto.Begin.HasValue)
             intervention.Begin = dto.Begin.Value;
         if (dto.End.HasValue)
@@ -161,20 +159,33 @@ public class InterventionsController : ControllerBase
             return NotFound($"Vehicle with ID {vehicleId} not found.");
         }
 
-        var intervention = new InterventionEntity
+        var intervention = await _context.Interventions
+            .FirstOrDefaultAsync(i => i.IncidentId == incidentId && i.Status != InterventionStatus.Completed);
+
+        if (intervention == null)
+        {
+            intervention = new InterventionEntity
+            {
+                Id = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                IncidentId = incidentId,
+                Begin = DateTime.UtcNow,
+                Status = InterventionStatus.Ongoing
+            };
+
+            _context.Interventions.Add(intervention);
+        }
+
+        var assigment = new Assigned
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.UtcNow,
-            IncidentId = incidentId,
+            InterventionId = intervention.Id,
             VehicleId = vehicleId,
-            Begin = DateTime.UtcNow,
-            End = null,
-            Status = Models.Enums.InterventionStatus.Pending,
-            ConfirmedAt = null,
-            ConfirmedBy = null,
+            Begin = DateTime.UtcNow
         };
 
-        _context.Interventions.Add(intervention);
+        _context.Assignees.Add(assigment);
 
         await _context.SaveChangesAsync();
         return NoContent();

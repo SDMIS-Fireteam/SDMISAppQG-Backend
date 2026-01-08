@@ -12,7 +12,7 @@ public class VehicleEntity : BaseEntity
     /// Identifiant matériel unique du véhicule (du micro:bit ou dispositif embarqué)
     /// </summary>
     public required int IdHardware { get; set; }
-    public required Guid TypeId { get; set; }
+    public required VehicleTypeEntity Type { get; set; }
     [Column(TypeName = "geography(Point, 4326)")]
     public Point? LastLocation { get; set; }
     public required VehicleAvailability Availability { get; set; }

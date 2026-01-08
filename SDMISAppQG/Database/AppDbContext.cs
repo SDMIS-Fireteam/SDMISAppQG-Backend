@@ -30,6 +30,19 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     {
         base.OnModelCreating(modelBuilder);
 
+        // Configuration des relations avec shadow properties
+        modelBuilder.Entity<VehicleEntity>()
+            .HasOne(v => v.Type)
+            .WithMany()
+            .HasForeignKey("TypeId")
+            .IsRequired();
+
+        modelBuilder.Entity<IncidentEntity>()
+            .HasOne(i => i.Type)
+            .WithMany()
+            .HasForeignKey("TypeId")
+            .IsRequired();
+
         // Seed IncidentTypes
         var incidentType1 = Guid.Parse("11111111-1111-1111-1111-111111111111");
         var incidentType2 = Guid.Parse("22222222-2222-2222-2222-222222222222");
@@ -75,6 +88,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             },
             new VehicleTypeEntity
             {
+                Id = vehicleType2,
+                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                Label = "FPT (Fourgon Pompe Tonne)",
+                CrewCapacity = 4,
+                Consumables = new List<string> { "water" }
+            },
+            new VehicleTypeEntity
+            {
                 Id = vehicleType3,
                 CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 Label = "VSAV (Ambulance)",
@@ -88,7 +109,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         var vehicle3 = Guid.Parse("99999999-9999-9999-9999-999999999999");
 
         modelBuilder.Entity<VehicleEntity>().HasData(
-            new VehicleEntity
+            new
             {
                 Id = vehicle1,
                 CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -96,12 +117,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 TypeId = vehicleType1,
                 LastLocation = new Point(2.3522, 48.8566) { SRID = 4326 },
                 Availability = VehicleAvailability.Available,
-                UnavailabilityReason = null,
+                UnavailabilityReason = (VehicleUnavailabilityReason?)null,
                 Fuel = 85.5f,
                 Consumable = "{\"water\": 1000, \"foam\": 200}",
-                PassengerCount = 6
+                PassengerCount = (int?)6
             },
-            new VehicleEntity
+            new
             {
                 Id = vehicle2,
                 CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -109,12 +130,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 TypeId = vehicleType2,
                 LastLocation = new Point(2.3500, 48.8550) { SRID = 4326 },
                 Availability = VehicleAvailability.Available,
-                UnavailabilityReason = null,
+                UnavailabilityReason = (VehicleUnavailabilityReason?)null,
                 Fuel = 72.0f,
                 Consumable = "{\"water\": 500}",
-                PassengerCount = 4
+                PassengerCount = (int?)4
             },
-            new VehicleEntity
+            new
             {
                 Id = vehicle3,
                 CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -122,9 +143,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 TypeId = vehicleType3,
                 LastLocation = new Point(2.3400, 48.8600) { SRID = 4326 },
                 Availability = VehicleAvailability.Ongoing,
-                UnavailabilityReason = null,
+                UnavailabilityReason = (VehicleUnavailabilityReason?)null,
                 Fuel = 60.5f,
-                PassengerCount = 3
+                Consumable = (string?)null,
+                PassengerCount = (int?)3
             }
         );
 
@@ -133,7 +155,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         var incident2 = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
 
         modelBuilder.Entity<IncidentEntity>().HasData(
-            new IncidentEntity
+            new
             {
                 Id = incident1,
                 TypeId = incidentType1,
@@ -145,7 +167,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 Source = IncidentSource.External,
                 Description = "Incendie d'appartement - 3ème étage",
             },
-            new IncidentEntity
+            new
             {
                 Id = incident2,
                 TypeId = incidentType2,

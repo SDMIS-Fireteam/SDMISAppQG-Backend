@@ -8,7 +8,6 @@ namespace SDMISAppQG.Models.DTOs;
 public class UpdateInterventionDto
 {
     public Guid? IncidentId { get; set; }
-    public Guid? VehicleId { get; set; }
     public DateTime? Begin { get; set; }
     public DateTime? End { get; set; }
     public InterventionStatus? Status { get; set; }

@@ -25,7 +25,7 @@ public class VehiclesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<VehicleEntity>>> GetVehicles()
     {
-        return await _context.Vehicles.ToListAsync();
+        return await _context.Vehicles.Include(v => v.Type).ToListAsync();
     }
 
     /// <summary>
@@ -34,7 +34,9 @@ public class VehiclesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<VehicleEntity>> GetVehicle(Guid id)
     {
-        var vehicle = await _context.Vehicles.FindAsync(id);
+        var vehicle = await _context.Vehicles
+            .Include(v => v.Type)
+            .FirstOrDefaultAsync(v => v.Id == id);
 
         if (vehicle == null)
         {
@@ -55,12 +57,18 @@ public class VehiclesController : ControllerBase
             return BadRequest($"Vehicle with IdHardware {dto.IdHardware} already exists.");
         }
 
+        var vehicleType = await _context.VehicleTypes.FindAsync(dto.TypeId);
+        if (vehicleType == null)
+        {
+            return BadRequest($"Vehicle type with ID {dto.TypeId} not found.");
+        }
+
         var vehicle = new VehicleEntity
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.UtcNow,
             IdHardware = dto.IdHardware,
-            TypeId = dto.TypeId,
+            Type = vehicleType,
             LastLocation = dto.LastLocation,
             Availability = dto.Availability,
             UnavailabilityReason = dto.UnavailabilityReason,
@@ -85,10 +93,18 @@ public class VehiclesController : ControllerBase
             return NotFound();
         }
 
+
+
         if (dto.IdHardware.HasValue)
             vehicle.IdHardware = dto.IdHardware.Value;
-        if (dto.TypeId.HasValue)
-            vehicle.TypeId = dto.TypeId.Value;
+        if (dto.TypeId.HasValue){
+            var vehicleType = await _context.VehicleTypes.FindAsync(dto.TypeId.Value);
+            if (vehicleType == null)
+            {
+                return BadRequest($"Vehicle type with ID {dto.TypeId.Value} not found.");
+            }
+            vehicle.Type = vehicleType;
+        }
         if (dto.LastLocation != null)
             vehicle.LastLocation = dto.LastLocation;
         if (dto.Availability.HasValue)

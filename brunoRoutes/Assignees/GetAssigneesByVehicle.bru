@@ -1,11 +1,11 @@
 meta {
-  name: CreateInterventionToIncident
+  name: GetAssigneesByVehicle
   type: http
-  seq: 1
+  seq: 4
 }
 
 get {
-  url: {{api_url}}/api/interventions/2/createIncident/2
+  url: {{api_url}}/api/assignees/vehicle/{{vehicle_id}}
   body: none
   auth: inherit
 }

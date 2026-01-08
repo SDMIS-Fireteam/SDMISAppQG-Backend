@@ -1,0 +1,16 @@
+meta {
+  name: DeleteAssignee
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{api_url}}/api/assignees/{{assignee_id}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

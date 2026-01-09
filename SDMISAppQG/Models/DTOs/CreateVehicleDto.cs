@@ -17,4 +17,6 @@ public class CreateVehicleDto
     public required VehicleAvailability Availability { get; set; }
     public required VehicleUnavailabilityReason UnavailabilityReason { get; set; }
     public required float Fuel { get; set; }
+    public string? Consumable { get; set; }
+    public int? PassengerCount { get; set; }
 }

@@ -14,4 +14,6 @@ public class UpdateVehicleDto
     public VehicleAvailability? Availability { get; set; }
     public VehicleUnavailabilityReason? UnavailabilityReason { get; set; }
     public float? Fuel { get; set; }
+    public string? Consumable { get; set; }
+    public int? PassengerCount { get; set; }
 }

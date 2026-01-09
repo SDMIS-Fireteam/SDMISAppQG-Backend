@@ -1,0 +1,26 @@
+meta {
+  name: Send Generic Message
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/Messaging/send-to-java
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "type": "custom_event",
+    "payload": {
+      "key1": "value1",
+      "key2": "value2"
+    },
+    "timestamp": "2026-01-08T12:00:00Z"
+  }
+}

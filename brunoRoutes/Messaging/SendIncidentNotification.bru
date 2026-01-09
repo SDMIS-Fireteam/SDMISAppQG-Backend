@@ -1,0 +1,24 @@
+meta {
+  name: Send Incident Notification
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/Messaging/incident-notification
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "incidentId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "description": "Accident de voiture sur l'autoroute",
+    "status": "En cours",
+    "createdAt": "2026-01-08T12:00:00Z"
+  }
+}

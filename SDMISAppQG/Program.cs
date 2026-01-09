@@ -5,10 +5,15 @@ using NetTopologySuite.IO;
 using Scalar.AspNetCore;
 using SDMISAppQG.Hubs;
 using SDMISAppQG.Infrastructure.AppBuilder;
+using SDMISAppQG.Infrastructure.Services.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// Configure RabbitMQ settings
+builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 
 builder.Services
    .AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)

@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDMISAppQG.Database;
+using SDMISAppQG.Infrastructure.Services.RabbitMQ;
 using SDMISAppQG.Models.DTOs;
 using SDMISAppQG.Models.Entities;
+using SDMISAppQG.Models.Messaging;
 
 namespace SDMISAppQG.Controllers;
 
@@ -13,10 +15,14 @@ namespace SDMISAppQG.Controllers;
 public class IncidentsController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly IRabbitMQService _rabbitMQService;
+    private readonly ILogger<IncidentsController> _logger;
 
-    public IncidentsController(AppDbContext context)
+    public IncidentsController(AppDbContext context, IRabbitMQService rabbitMQService, ILogger<IncidentsController> logger)
     {
         _context = context;
+        _rabbitMQService = rabbitMQService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -73,6 +79,31 @@ public class IncidentsController : ControllerBase
 
         _context.Incidents.Add(incident);
         await _context.SaveChangesAsync();
+
+        // Publier l'incident dans RabbitMQ
+        try
+        {
+            var incidentNotification = new IncidentNotification
+            {
+                IncidentId = incident.Id,
+                Description = incident.Description ?? string.Empty,
+                Status = incident.Status.ToString(),
+                CreatedAt = incident.CreatedAt
+            };
+
+            var envelope = new MessageEnvelope<IncidentNotification>
+            {
+                Data = incidentNotification
+            };
+
+            _rabbitMQService.PublishToJava(envelope);
+            _logger.LogInformation("Incident {IncidentId} published to RabbitMQ", incident.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to publish incident {IncidentId} to RabbitMQ", incident.Id);
+            // Continue even if RabbitMQ publish fails
+        }
 
         return CreatedAtAction(nameof(GetIncident), new { id = incident.Id }, incident);
     }

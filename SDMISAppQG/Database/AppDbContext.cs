@@ -19,6 +19,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<VehicleTypeEntity> VehicleTypes { get; set; }
     public DbSet<TelemetryLogsEntity> TelemetryLogs { get; set; }
     public DbSet<Assigned> Assignees { get; set; }
+    public DbSet<VehiclePropositionEntity> VehiclePropositions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

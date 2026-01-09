@@ -87,6 +87,10 @@ public class TelemetryService
         // Mise à jour de la position du véhicule
         Point point = new Point(data.Longitude, data.Latitude) { SRID = 4326 };
         vehicle.LastLocation = point;
+        vehicle.Fuel = (float?) data.Levels?["fuel"] ?? vehicle.Fuel;
+        vehicle.Consumable = data.Levels != null
+            ? System.Text.Json.JsonSerializer.Serialize(data.Levels.Where(kv => kv.Key != "fuel").ToDictionary(kv => kv.Key, kv => kv.Value))
+            : vehicle.Consumable;
 
         // Création du log de télémétrie
         var telemetryLog = new TelemetryLogsEntity

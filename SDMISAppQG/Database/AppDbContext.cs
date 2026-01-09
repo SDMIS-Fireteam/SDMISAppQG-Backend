@@ -119,7 +119,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 Availability = VehicleAvailability.Available,
                 UnavailabilityReason = (VehicleUnavailabilityReason?)null,
                 Fuel = 85.5f,
-                Consumable = "{\"water\": 1000, \"foam\": 200}",
+                Consumable = "{\"water\": \"100%\", \"foam\": \"80%\"}",
                 PassengerCount = (int?)6
             },
             new
@@ -132,7 +132,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 Availability = VehicleAvailability.Available,
                 UnavailabilityReason = (VehicleUnavailabilityReason?)null,
                 Fuel = 72.0f,
-                Consumable = "{\"water\": 500}",
+                Consumable = "{\"water\": \"100%\"}",
                 PassengerCount = (int?)4
             },
             new

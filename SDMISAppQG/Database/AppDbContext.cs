@@ -84,7 +84,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 Label = "Camion Pompe",
                 CrewCapacity = 6,
-                Consumables = new List<string> { "water"}
+                Consumables = new List<string> { "water" }
             },
             new VehicleTypeEntity
             {

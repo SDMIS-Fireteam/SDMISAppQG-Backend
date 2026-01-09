@@ -35,8 +35,9 @@ public class MessagingController : ControllerBase
             _rabbitMQService.PublishToJava(envelope);
             _logger.LogInformation("Vehicle location update sent for vehicle {VehicleId}", locationUpdate.VehicleId);
 
-            return Ok(new { 
-                success = true, 
+            return Ok(new
+            {
+                success = true,
                 message = "Vehicle location update sent to Java service",
                 messageId = envelope.MessageId
             });
@@ -64,8 +65,9 @@ public class MessagingController : ControllerBase
             _rabbitMQService.PublishToJava(envelope);
             _logger.LogInformation("Incident notification sent for incident {IncidentId}", incident.IncidentId);
 
-            return Ok(new { 
-                success = true, 
+            return Ok(new
+            {
+                success = true,
                 message = "Incident notification sent to Java service",
                 messageId = envelope.MessageId
             });
@@ -93,8 +95,9 @@ public class MessagingController : ControllerBase
             _rabbitMQService.PublishToJava(envelope);
             _logger.LogInformation("Generic message sent to Java service");
 
-            return Ok(new { 
-                success = true, 
+            return Ok(new
+            {
+                success = true,
                 message = "Message sent to Java service",
                 messageId = envelope.MessageId
             });
@@ -114,8 +117,9 @@ public class MessagingController : ControllerBase
     {
         try
         {
-            return Ok(new { 
-                success = true, 
+            return Ok(new
+            {
+                success = true,
                 message = "RabbitMQ messaging service is operational",
                 timestamp = DateTime.UtcNow
             });

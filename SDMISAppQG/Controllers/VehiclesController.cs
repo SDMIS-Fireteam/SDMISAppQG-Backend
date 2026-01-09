@@ -52,7 +52,7 @@ public class VehiclesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<VehicleEntity>> CreateVehicle(CreateVehicleDto dto)
     {
-        if(await _context.Vehicles.AnyAsync(v => v.IdHardware == dto.IdHardware))
+        if (await _context.Vehicles.AnyAsync(v => v.IdHardware == dto.IdHardware))
         {
             return BadRequest($"Vehicle with IdHardware {dto.IdHardware} already exists.");
         }
@@ -99,7 +99,8 @@ public class VehiclesController : ControllerBase
 
         if (dto.IdHardware.HasValue)
             vehicle.IdHardware = dto.IdHardware.Value;
-        if (dto.TypeId.HasValue){
+        if (dto.TypeId.HasValue)
+        {
             var vehicleType = await _context.VehicleTypes.FindAsync(dto.TypeId.Value);
             if (vehicleType == null)
             {

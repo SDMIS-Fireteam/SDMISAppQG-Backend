@@ -148,7 +148,7 @@ public class InterventionsController : ControllerBase
             .Where(i => _context.Assignees
                 .Any(a => a.InterventionId == i.Id && a.VehicleId == vehicleId))
             .ToListAsync();
-         return interventions;
+        return interventions;
     }
 
     /// <summary>

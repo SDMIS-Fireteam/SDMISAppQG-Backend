@@ -86,7 +86,7 @@ public class RabbitMQService : IRabbitMQService, IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to connect to RabbitMQ");
-            throw;
+            throw new InvalidOperationException($"Failed to connect to RabbitMQ at {_settings.HostName}:{_settings.Port}", ex);
         }
         finally
         {
@@ -123,7 +123,7 @@ public class RabbitMQService : IRabbitMQService, IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to publish message to queue {Queue}", queueName);
-            throw;
+            throw new InvalidOperationException($"Failed to publish message to queue {queueName}", ex);
         }
     }
 
@@ -145,11 +145,11 @@ public class RabbitMQService : IRabbitMQService, IDisposable
                 {
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
-                    
+
                     _logger.LogInformation("Received message from queue {Queue}: {Message}", queueName, message);
-                    
+
                     onMessageReceived(message);
-                    
+
                     await _channel!.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false);
                 }
                 catch (Exception ex)
@@ -158,6 +158,11 @@ public class RabbitMQService : IRabbitMQService, IDisposable
                     await _channel!.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: true);
                 }
             };
+
+            if (_channel == null)
+            {
+                throw new InvalidOperationException("Channel is not initialized");
+            }
 
             await _channel.BasicConsumeAsync(
                 queue: queueName,
@@ -170,7 +175,7 @@ public class RabbitMQService : IRabbitMQService, IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to subscribe to queue {Queue}", queueName);
-            throw;
+            throw new InvalidOperationException($"Failed to subscribe to queue {queueName}", ex);
         }
     }
 
@@ -181,9 +186,18 @@ public class RabbitMQService : IRabbitMQService, IDisposable
 
     public void Dispose()
     {
-        _channel?.Dispose();
-        _connection?.Dispose();
-        _connectionLock.Dispose();
-        _logger.LogInformation("RabbitMQ connection disposed");
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _channel?.Dispose();
+            _connection?.Dispose();
+            _connectionLock.Dispose();
+            _logger.LogInformation("RabbitMQ connection disposed");
+        }
     }
 }

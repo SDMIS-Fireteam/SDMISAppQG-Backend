@@ -141,6 +141,16 @@ public class InterventionsController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("vehicle/{vehicleId}")]
+    public async Task<ActionResult<IEnumerable<InterventionEntity>>> GetInterventionsByVehicle(Guid vehicleId)
+    {
+        var interventions = await _context.Interventions
+            .Where(i => _context.Assignees
+                .Any(a => a.InterventionId == i.Id && a.VehicleId == vehicleId))
+            .ToListAsync();
+         return interventions;
+    }
+
     /// <summary>
     /// Assigne un véhicule à un incident en créant une intervention
     /// </summary>

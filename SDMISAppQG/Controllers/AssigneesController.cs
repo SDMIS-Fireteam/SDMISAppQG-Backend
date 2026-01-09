@@ -177,6 +177,20 @@ public class AssigneesController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("incident/{incidentId}")]
+    public async Task<ActionResult<IEnumerable<Assigned>>> GetAssigneesByIncident(Guid incidentId)
+    {
+        var interventions = await _context.Interventions
+            .Where(i => i.IncidentId == incidentId)
+            .Select(i => i.Id)
+            .ToListAsync();
+
+        var assignees = await _context.Assignees
+            .Where(a => interventions.Contains(a.InterventionId))
+            .ToListAsync();
+        return assignees;
+    }
+
     private async Task<bool> AssigneeExists(Guid id)
     {
         return await _context.Assignees.AnyAsync(e => e.Id == id);

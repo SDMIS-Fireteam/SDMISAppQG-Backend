@@ -186,10 +186,23 @@ public class InterventionsController : ControllerBase
             _context.Interventions.Add(intervention);
         }
 
+        // Créer l'itinéraire au format MapBox avec waypoints
+        var waypoints = new[]
+        {
+            new { lat = vehicle.LastLocation?.Y ?? 0, lon = vehicle.LastLocation?.X ?? 0 }, // Position du véhicule
+            new { lat = incident.Location?.Y ?? 0, lon = incident.Location?.X ?? 0 }        // Position de l'incident
+        };
+
+        var itinerary = new
+        {
+            waypoints = waypoints,
+        };
+
         var assigment = new Assigned
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.UtcNow,
+            Itinerary = System.Text.Json.JsonSerializer.Serialize(itinerary),
             InterventionId = intervention.Id,
             VehicleId = vehicleId,
             Begin = DateTime.UtcNow

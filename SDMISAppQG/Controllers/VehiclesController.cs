@@ -72,7 +72,9 @@ public class VehiclesController : ControllerBase
             LastLocation = dto.LastLocation,
             Availability = dto.Availability,
             UnavailabilityReason = dto.UnavailabilityReason,
-            Fuel = dto.Fuel
+            Fuel = dto.Fuel,
+            Consumable = dto.Consumable,
+            PassengerCount = dto.PassengerCount
         };
 
         _context.Vehicles.Add(vehicle);
@@ -113,6 +115,10 @@ public class VehiclesController : ControllerBase
             vehicle.UnavailabilityReason = dto.UnavailabilityReason.Value;
         if (dto.Fuel.HasValue)
             vehicle.Fuel = dto.Fuel.Value;
+        if (dto.Consumable != null)
+            vehicle.Consumable = dto.Consumable;
+        if (dto.PassengerCount.HasValue)
+            vehicle.PassengerCount = dto.PassengerCount.Value;
 
         vehicle.UpdatedAt = DateTime.UtcNow;
 

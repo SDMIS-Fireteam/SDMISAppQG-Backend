@@ -3,4 +3,5 @@
     <Build />
   </Project>
   <Project Path="SDMISAppQG/SDMISAppQG.csproj" />
+  <Project Path="SDMISTests/SDMISTests.csproj" Id="7e89d47f-324a-406d-b2b1-04a74417526c" />
 </Solution>

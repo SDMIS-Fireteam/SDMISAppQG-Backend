@@ -14,12 +14,82 @@ public class SensorValueTests {
       Assert.Equal(UnitOfMeasurement.Unknown, result.Unite);
    }
 
-   [Fact]
-   public void FromTelemetry_WithPercentageString_ReturnsCorrectValueAndUnit() {
-      var result = SensorValue.FromTelemetry("fuel", "85.5%");
+       [Fact]
 
-      Assert.Equal("FUEL", result.Code);
-      Assert.Equal(85.5, result.Valeur);
-      Assert.Equal(UnitOfMeasurement.Percentage, result.Unite);
+       public void FromTelemetry_WithPercentageString_ReturnsCorrectValueAndUnit()
+
+       {
+
+           var result = SensorValue.FromTelemetry("fuel", "85.5%");
+
+           
+
+           Assert.Equal("FUEL", result.Code);
+
+           Assert.Equal(85.5, result.Valeur);
+
+           Assert.Equal(UnitOfMeasurement.Percentage, result.Unite);
+
+       }
+
+   
+
+       [Fact]
+
+       public void FromTelemetry_WithCelsiusString_ReturnsCorrectValueAndUnit()
+
+       {
+
+           var result = SensorValue.FromTelemetry("temp", "25.0 C");
+
+           
+
+           Assert.Equal("TEMP", result.Code);
+
+           Assert.Equal(25.0, result.Valeur);
+
+           Assert.Equal(UnitOfMeasurement.Celsius, result.Unite);
+
+       }
+
+   
+
+       [Fact]
+
+       public void FromTelemetry_WithLitersString_ReturnsCorrectValueAndUnit()
+
+       {
+
+           var result = SensorValue.FromTelemetry("water", "1000L");
+
+           
+
+           Assert.Equal("WATER", result.Code);
+
+           Assert.Equal(1000.0, result.Valeur);
+
+           Assert.Equal(UnitOfMeasurement.VolumeLiters, result.Unite);
+
+       }
+
+   
+
+       [Theory]
+
+       [InlineData(100, 100.0)]
+
+       [InlineData(100.5f, 100.5)]
+
+       [InlineData("100.5", 100.5)]
+
+       public void FromTelemetry_WithVariousNumericTypes_ParsesCorrectly(object value, double expected)
+
+       {
+
+           var result = SensorValue.FromTelemetry("test", value);
+
+           Assert.Equal(expected, result.Valeur);
+
+       }
+
    }
-}

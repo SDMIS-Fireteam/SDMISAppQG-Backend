@@ -88,7 +88,14 @@ public class IncidentsController : ControllerBase
                 IncidentId = incident.Id,
                 Description = incident.Description ?? string.Empty,
                 Status = incident.Status.ToString(),
-                CreatedAt = incident.CreatedAt
+                CreatedAt = incident.CreatedAt,
+                Longitude = incident.Location.Coordinate[0],
+                Latitude = incident.Location.Coordinate[1],
+                Type = new IncidentTypeInfo
+                {
+                    id = incident.Type.Id,
+                    label = incident.Type.Label
+                }
             };
 
             var envelope = new MessageEnvelope<IncidentNotification>

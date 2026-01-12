@@ -32,4 +32,13 @@ public class IncidentNotification
     public string Description { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public required DateTime CreatedAt { get; set; }
+    public required double Latitude { get; set; }
+    public required double Longitude { get; set; }
+    public required IncidentTypeInfo Type { get; set; }
+}
+
+public class IncidentTypeInfo
+{
+    public required Guid id { get; set; }
+    public required string label { get; set; }
 }

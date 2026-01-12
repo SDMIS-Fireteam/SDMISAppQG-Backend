@@ -63,6 +63,11 @@ jobs:
     - name: Install dotnet-ef
       run: dotnet tool install --global dotnet-ef
     
+    - name: Restore dependencies
+      run: |
+        dotnet restore SDMISAppQG/SDMISAppQG.csproj
+        dotnet restore SDMISTests/SDMISTests.csproj
+
     - name: Run migrations
       run: dotnet ef database update --project SDMISAppQG/SDMISAppQG.csproj --startup-project SDMISAppQG/SDMISAppQG.csproj
       env:

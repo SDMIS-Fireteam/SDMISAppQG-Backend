@@ -1,18 +1,28 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SDMISAppQG.Controllers;
+using SDMISAppQG.Database;
 using SDMISAppQG.Infrastructure.Services.RabbitMQ;
+using SDMISTests.Fixtures;
+using Xunit;
 
 namespace SDMISTests.Unit;
 
-public class MessagingControllerTests {
+public class MessagingControllerTests : IClassFixture<DatabaseFixture> {
+   private readonly DatabaseFixture _fixture;
+
+   public MessagingControllerTests(DatabaseFixture fixture) {
+      _fixture = fixture;
+   }
+
    [Fact]
    public void HealthCheck_ReturnsOk() {
       // Arrange
       var mockService = new Mock<IRabbitMQService>();
       var mockLogger = new Mock<ILogger<MessagingController>>();
-      var controller = new MessagingController(mockService.Object, mockLogger.Object);
+      var controller = new MessagingController(mockService.Object, mockLogger.Object, _fixture.Context);
 
       // Act
       var result = controller.HealthCheck();
@@ -28,7 +38,7 @@ public class MessagingControllerTests {
       // Arrange
       var mockService = new Mock<IRabbitMQService>();
       var mockLogger = new Mock<ILogger<MessagingController>>();
-      var controller = new MessagingController(mockService.Object, mockLogger.Object);
+      var controller = new MessagingController(mockService.Object, mockLogger.Object, _fixture.Context);
 
       var update = new SDMISAppQG.Models.Messaging.VehicleLocationUpdate {
          VehicleId = Guid.NewGuid(),

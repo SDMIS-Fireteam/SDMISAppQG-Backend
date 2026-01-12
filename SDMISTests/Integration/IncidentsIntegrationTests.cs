@@ -50,8 +50,52 @@ public class IncidentsIntegrationTests : IClassFixture<DatabaseFixture> {
       context.Incidents.Remove(insertedIncident);
       await context.SaveChangesAsync();
 
-      // Assert - Deleted
-      var deletedIncident = await context.Incidents.FindAsync(incidentId);
-      Assert.Null(deletedIncident);
-   }
-}
+              // Assert - Deleted
+              var deletedIncident = await context.Incidents.FindAsync(incidentId);
+              Assert.Null(deletedIncident);
+          }
+      
+          [Fact]
+          public async Task CanUpdateIncident()
+          {
+              // Arrange
+              var context = _fixture.Context;
+              var typeId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+              var incidentType = await context.IncidentTypes.FindAsync(typeId);
+              Assert.NotNull(incidentType);
+      
+              var incidentId = Guid.NewGuid();
+              var incident = new IncidentEntity
+              {
+                  Id = incidentId,
+                  Type = incidentType,
+                  CreatedAt = DateTime.UtcNow,
+                  Location = new Point(4.8357, 45.7640) { SRID = 4326 },
+                  Severity = IncidentSeverity.Medium,
+                  Priority = 2.0f,
+                  Status = IncidentStatus.Declared,
+                  Source = IncidentSource.Internal,
+                  Description = "Original Description"
+              };
+      
+              context.Incidents.Add(incident);
+              await context.SaveChangesAsync();
+      
+              // Act - Update
+              var incidentToUpdate = await context.Incidents.FindAsync(incidentId);
+              Assert.NotNull(incidentToUpdate);
+              incidentToUpdate.Description = "Updated Description";
+              incidentToUpdate.Status = IncidentStatus.Ongoing;
+              await context.SaveChangesAsync();
+      
+              // Assert - Updated
+              var updatedIncident = await context.Incidents.FindAsync(incidentId);
+              Assert.NotNull(updatedIncident);
+              Assert.Equal("Updated Description", updatedIncident.Description);
+              Assert.Equal(IncidentStatus.Ongoing, updatedIncident.Status);
+      
+              // Cleanup
+              context.Incidents.Remove(updatedIncident);
+              await context.SaveChangesAsync();
+          }
+      }

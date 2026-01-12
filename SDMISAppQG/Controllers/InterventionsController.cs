@@ -214,6 +214,50 @@ public class InterventionsController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Termine une intervention en mettant à jour son statut et sa date de fin
+    /// </summary>
+    [HttpPost("{id}/complete")]
+    public async Task<IActionResult> CompleteIntervention(Guid id)
+    {
+        var intervention = await _context.Interventions.FindAsync(id);
+        if (intervention == null)
+        {
+            return NotFound($"Intervention with ID {id} not found.");
+        }
+
+        if (intervention.Status == InterventionStatus.Completed)
+        {
+            return BadRequest("Intervention is already completed.");
+        }
+
+        // Mettre à jour l'intervention
+        intervention.Status = InterventionStatus.Completed;
+        intervention.End = DateTime.UtcNow;
+        intervention.UpdatedAt = DateTime.UtcNow;
+
+        // Mettre à jour toutes les assignations liées
+        var assignments = await _context.Assignees
+            .Where(a => a.InterventionId == id && a.End == null)
+            .ToListAsync();
+
+        foreach (var assignment in assignments)
+        {
+            assignment.End = DateTime.UtcNow;
+            assignment.UpdatedAt = DateTime.UtcNow;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            message = "Intervention completed successfully",
+            interventionId = intervention.Id,
+            completedAt = intervention.End,
+            assignmentsCompleted = assignments.Count
+        });
+    }
+
     private async Task<bool> InterventionExists(Guid id)
     {
         return await _context.Interventions.AnyAsync(e => e.Id == id);

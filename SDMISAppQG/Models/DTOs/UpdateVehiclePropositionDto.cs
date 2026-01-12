@@ -5,7 +5,7 @@ namespace SDMISAppQG.Models.DTOs;
 /// </summary>
 public class UpdateVehiclePropositionDto
 {
-    public Guid? InterventionId { get; set; }
+    public Guid? IncidentId { get; set; }
     public Guid? VehicleId { get; set; }
     public float? Score { get; set; }
 }

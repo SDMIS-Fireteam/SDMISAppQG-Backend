@@ -1,3 +1,5 @@
+using SDMISAppQG.Models.Enums;
+
 namespace SDMISAppQG.Models.DTOs;
 
 /// <summary>
@@ -10,4 +12,5 @@ public class CreateUserDto
     public required string Username { get; set; }
     public required string Firstname { get; set; }
     public required string Lastname { get; set; }
+    public required UserRole Role { get; set; }
 }

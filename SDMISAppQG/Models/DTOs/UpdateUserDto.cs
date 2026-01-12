@@ -1,3 +1,5 @@
+using SDMISAppQG.Models.Enums;
+
 namespace SDMISAppQG.Models.DTOs;
 
 /// <summary>
@@ -10,5 +12,6 @@ public class UpdateUserDto
     public string? Username { get; set; }
     public string? Firstname { get; set; }
     public string? Lastname { get; set; }
+    public UserRole? Role { get; set; }
     public bool? IsDeleted { get; set; }
 }

@@ -106,6 +106,7 @@ public class UsersController : ControllerBase
             Username = dto.Username,
             Firstname = dto.Firstname,
             Lastname = dto.Lastname,
+            Role = dto.Role,
             IsDeleted = false
         };
 
@@ -146,6 +147,8 @@ public class UsersController : ControllerBase
             user.Firstname = dto.Firstname;
         if (!string.IsNullOrEmpty(dto.Lastname))
             user.Lastname = dto.Lastname;
+        if (dto.Role.HasValue)
+            user.Role = dto.Role.Value;
         if (dto.IsDeleted.HasValue)
             user.IsDeleted = dto.IsDeleted.Value;
 

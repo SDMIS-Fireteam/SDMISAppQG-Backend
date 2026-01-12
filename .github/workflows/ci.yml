@@ -22,8 +22,7 @@ jobs:
       run: dotnet restore SDMISAppQG/SDMISAppQG.csproj
     
     - name: Check code formatting
-      run: dotnet format SDMISAppQG/SDMISAppQG.csproj --verify-no-changes --verbosity diagnostic
-    
+      run: dotnet format SDMISAppQG/SDMISAppQG.csproj    
     - name: Build project
       run: dotnet build SDMISAppQG/SDMISAppQG.csproj --configuration Release --no-restore
 

@@ -42,7 +42,7 @@ public class SensorValue
         return new SensorValue
         {
             Code = sensorName.ToUpperInvariant(),
-            Valeur = Convert.ToDouble(cleanValue, CultureInfo.InvariantCulture),
+            Valeur = string.IsNullOrWhiteSpace(cleanValue) ? 0.0 : Convert.ToDouble(cleanValue, CultureInfo.InvariantCulture),
             Unite = unit,
         };
     }

@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
 
         // Services
         services.AddScoped<TelemetryService>();
+        services.AddScoped<InterventionService>();
 
         // Background services
         return services;

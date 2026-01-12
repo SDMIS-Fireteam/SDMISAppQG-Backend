@@ -1,4 +1,5 @@
 ﻿using SDMISAppQG.Models.Enums;
+using System.Globalization;
 
 namespace SDMISAppQG.Models;
 
@@ -15,19 +16,24 @@ public class SensorValue
     public static SensorValue FromTelemetry(string sensorName, object value)
     {
         // Ici, on pourrait avoir une logique plus complexe pour déterminer l'unité et le code
-        string stringValue = value.ToString() ?? string.Empty;
+        string stringValue = Convert.ToString(value, CultureInfo.InvariantCulture) ?? string.Empty;
         UnitOfMeasurement unit;
+        string cleanValue = stringValue;
+
         switch (stringValue)
         {
             case string s when s.Contains("%"):
                 unit = UnitOfMeasurement.Percentage;
+                cleanValue = s.Replace("%", "").Trim();
                 break;
             case string s when s.Contains("C"):
                 unit = UnitOfMeasurement.Celsius;
+                cleanValue = s.Replace("C", "").Trim();
                 break;
 
             case string s when s.Contains("L"):
                 unit = UnitOfMeasurement.VolumeLiters;
+                cleanValue = s.Replace("L", "").Trim();
                 break;
             default:
                 unit = UnitOfMeasurement.Unknown;
@@ -36,7 +42,7 @@ public class SensorValue
         return new SensorValue
         {
             Code = sensorName.ToUpperInvariant(),
-            Valeur = Convert.ToDouble(value),
+            Valeur = Convert.ToDouble(cleanValue, CultureInfo.InvariantCulture),
             Unite = unit,
         };
     }

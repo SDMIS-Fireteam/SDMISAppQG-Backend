@@ -1,0 +1,28 @@
+meta {
+  name: PostIntervention
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{api_url}}/api/interventions
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "incidentId": "00000000-0000-0000-0000-000000000001",
+    "vehicleId": "00000000-0000-0000-0000-000000000002",
+    "begin": "2026-01-08T10:00:00Z",
+    "end": null,
+    "status": 0,
+    "confirmedAt": null,
+    "confirmedBy": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

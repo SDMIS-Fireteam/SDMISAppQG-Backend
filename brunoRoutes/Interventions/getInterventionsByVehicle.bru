@@ -1,0 +1,15 @@
+meta {
+  name: getInterventionsByVehicle
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{api_url}}/api/interventions/vehicle/12
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

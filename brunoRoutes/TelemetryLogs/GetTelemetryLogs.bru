@@ -1,0 +1,16 @@
+meta {
+  name: GetTelemetryLogs
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{api_url}}/api/telemetrylogs
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

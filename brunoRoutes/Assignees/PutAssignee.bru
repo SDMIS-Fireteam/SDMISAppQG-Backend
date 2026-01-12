@@ -1,0 +1,23 @@
+meta {
+  name: PutAssignee
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{api_url}}/api/assignees/{{assignee_id}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "itinerary": "{\"waypoints\": [{\"lat\": 48.8566, \"lon\": 2.3522}, {\"lat\": 48.8700, \"lon\": 2.3500}]}",
+    "end": "2026-01-08T14:30:00Z"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

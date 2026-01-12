@@ -1,0 +1,39 @@
+meta {
+  name: PostTelemetryLog
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{api_url}}/api/telemetrylogs
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "vehicleId": "00000000-0000-0000-0000-000000000001",
+    "position": {
+      "type": "Point",
+      "coordinates": [2.3522, 48.8566]
+    },
+    "timestamp": "2026-01-08T10:30:00Z",
+    "sensorsValues": [
+      {
+        "name": "temperature",
+        "value": 25.5,
+        "unit": 1
+      },
+      {
+        "name": "pressure",
+        "value": 1013.25,
+        "unit": 2
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

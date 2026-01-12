@@ -1,0 +1,16 @@
+meta {
+  name: DeleteVehicleType
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{api_url}}/api/vehicletypes/12000000-0000-0000-0000-000000000000
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

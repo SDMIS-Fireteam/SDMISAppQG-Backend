@@ -1,0 +1,30 @@
+meta {
+  name: PostVehicles
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{api_url}}/api/vehicles
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "idHardware": 121,
+    "typeId": "12000000-0000-0000-0000-000000000000",
+    "lastLocation": {
+      "type": "Point",
+      "coordinates": [2.3521, 48.8564]
+    },
+    "availability": 1,
+    "unavailabilityReason": 0,
+    "fuel": 75.5
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

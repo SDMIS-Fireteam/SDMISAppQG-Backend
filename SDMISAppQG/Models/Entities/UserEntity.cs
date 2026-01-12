@@ -1,8 +1,14 @@
-﻿namespace SDMISAppQG.Models.Entities; 
-public class UserEntity : BaseEntity {
-   public Guid KeyCloakId { get; set; }
-   public required string Username { get; set; }
-   public required string Firstname { get; set; }
-   public required string Lastname { get; set; }
-   public bool IsDeleted { get; set; } = false;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace SDMISAppQG.Models.Entities;
+
+[Index(nameof(Email), IsUnique = true)]
+public class UserEntity : BaseEntity
+{
+    public Guid KeyCloakId { get; set; }
+    public required string Email { get; set; }
+    public required string Username { get; set; }
+    public required string Firstname { get; set; }
+    public required string Lastname { get; set; }
+    public bool IsDeleted { get; set; } = false;
 }

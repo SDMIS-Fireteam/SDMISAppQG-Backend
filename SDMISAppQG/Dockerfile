@@ -18,13 +18,25 @@ COPY . .
 WORKDIR "/src/SDMISAppQG"
 RUN dotnet build "./SDMISAppQG.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+# Install dotnet-ef tool for migrations
+RUN dotnet tool install --global dotnet-ef --version 10.0.1
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
 # Cette étape permet de publier le projet de service à copier dans la phase finale
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./SDMISAppQG.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Cette phase est utilisée en production ou lors de l’exécution à partir de VS en mode normal (par défaut quand la configuration de débogage n’est pas utilisée)
-FROM base AS final
+# Cette phase est utilisée en production ou lors de l'exécution à partir de VS en mode normal (par défaut quand la configuration de débogage n'est pas utilisée)
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "SDMISAppQG.dll"]
+COPY --from=build /src/SDMISAppQG /src/SDMISAppQG
+COPY --from=build /root/.dotnet/tools /root/.dotnet/tools
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Copy entrypoint script and convert line endings
+COPY SDMISAppQG/entrypoint.sh .
+RUN sed -i 's/\r$//' entrypoint.sh && chmod +x entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]

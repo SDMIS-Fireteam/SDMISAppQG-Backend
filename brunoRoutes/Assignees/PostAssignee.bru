@@ -1,0 +1,26 @@
+meta {
+  name: PostAssignee
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{api_url}}/api/assignees
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "interventionId": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    "vehicleId": "77777777-7777-7777-7777-777777777777",
+    "itinerary": "{\"waypoints\": [{\"lat\": 48.8566, \"lon\": 2.3522}, {\"lat\": 48.8600, \"lon\": 2.3400}]}",
+    "begin": "2026-01-08T12:00:00Z",
+    "end": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

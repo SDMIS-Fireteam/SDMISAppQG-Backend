@@ -4,7 +4,7 @@ namespace SDMISAppQG.Models.Entities;
 /// Proposition de véhicule pour une intervention
 /// </summary>
 public class VehiclePropositionEntity : BaseEntity {
-   public required Guid InterventionId { get; set; }
-   public required Guid VehicleId { get; set; }
+   public required IncidentEntity Incident { get; set; }
+   public required VehicleEntity Vehicle { get; set; }
    public required float Score { get; set; }
 }

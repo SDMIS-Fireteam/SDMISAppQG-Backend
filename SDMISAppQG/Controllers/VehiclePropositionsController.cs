@@ -24,7 +24,10 @@ public class VehiclePropositionsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<VehiclePropositionEntity>>> GetVehiclePropositions()
     {
-        return await _context.VehiclePropositions.ToListAsync();
+        return await _context.VehiclePropositions
+            .Include(p => p.Incident)
+            .Include(p => p.Vehicle)
+            .ToListAsync();
     }
 
     /// <summary>
@@ -33,7 +36,10 @@ public class VehiclePropositionsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<VehiclePropositionEntity>> GetVehicleProposition(Guid id)
     {
-        var proposition = await _context.VehiclePropositions.FindAsync(id);
+        var proposition = await _context.VehiclePropositions
+            .Include(p => p.Incident)
+            .Include(p => p.Vehicle)
+            .FirstOrDefaultAsync(p => p.Id == id);
 
         if (proposition == null)
         {
@@ -46,12 +52,14 @@ public class VehiclePropositionsController : ControllerBase
     /// <summary>
     /// Récupère toutes les propositions pour une intervention spécifique
     /// </summary>
-    [HttpGet("intervention/{interventionId}")]
-    public async Task<ActionResult<IEnumerable<VehiclePropositionEntity>>> GetPropositionsByIntervention(Guid interventionId)
+    [HttpGet("incident/{incidentId}")]
+    public async Task<ActionResult<IEnumerable<VehiclePropositionEntity>>> GetPropositionsByIntervention(Guid incidentId)
     {
         var propositions = await _context.VehiclePropositions
-            .Where(p => p.InterventionId == interventionId)
+            .Where(p => p.Incident.Id == incidentId)
             .OrderByDescending(p => p.Score)
+            .Include(p => p.Vehicle)
+            .Include(p => p.Incident)
             .Take(3)
             .ToListAsync();
 
@@ -65,7 +73,9 @@ public class VehiclePropositionsController : ControllerBase
     public async Task<ActionResult<IEnumerable<VehiclePropositionEntity>>> GetPropositionsByVehicle(Guid vehicleId)
     {
         var propositions = await _context.VehiclePropositions
-            .Where(p => p.VehicleId == vehicleId)
+            .Where(p => p.Vehicle.Id == vehicleId)
+            .Include(p => p.Vehicle)
+            .Include(p => p.Incident)
             .OrderByDescending(p => p.Score)
             .ToListAsync();
 
@@ -78,16 +88,16 @@ public class VehiclePropositionsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<VehiclePropositionEntity>> CreateVehicleProposition(CreateVehiclePropositionDto dto)
     {
-        // Vérifier que l'intervention existe
-        var interventionExists = await _context.Interventions.AnyAsync(i => i.Id == dto.InterventionId);
-        if (!interventionExists)
+        // Vérifier que l'incident existe
+        var incident = await _context.Incidents.FindAsync(dto.IncidentId);
+        if (incident == null)
         {
-            return BadRequest($"Intervention with ID {dto.InterventionId} not found.");
+            return BadRequest($"Incident with ID {dto.IncidentId} not found.");
         }
 
         // Vérifier que le véhicule existe
-        var vehicleExists = await _context.Vehicles.AnyAsync(v => v.Id == dto.VehicleId);
-        if (!vehicleExists)
+        var vehicle = await _context.Vehicles.FindAsync(dto.VehicleId);
+        if (vehicle == null)
         {
             return BadRequest($"Vehicle with ID {dto.VehicleId} not found.");
         }
@@ -96,8 +106,8 @@ public class VehiclePropositionsController : ControllerBase
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.UtcNow,
-            InterventionId = dto.InterventionId,
-            VehicleId = dto.VehicleId,
+            Incident = incident,
+            Vehicle = vehicle,
             Score = dto.Score
         };
 
@@ -119,24 +129,24 @@ public class VehiclePropositionsController : ControllerBase
             return NotFound();
         }
 
-        if (dto.InterventionId.HasValue)
+        if (dto.IncidentId.HasValue)
         {
-            var interventionExists = await _context.Interventions.AnyAsync(i => i.Id == dto.InterventionId.Value);
-            if (!interventionExists)
+            var incident = await _context.Incidents.FindAsync(dto.IncidentId.Value);
+            if (incident == null)
             {
-                return BadRequest($"Intervention with ID {dto.InterventionId.Value} not found.");
+                return BadRequest($"Incident with ID {dto.IncidentId.Value} not found.");
             }
-            proposition.InterventionId = dto.InterventionId.Value;
+            proposition.Incident = incident;
         }
 
         if (dto.VehicleId.HasValue)
         {
-            var vehicleExists = await _context.Vehicles.AnyAsync(v => v.Id == dto.VehicleId.Value);
-            if (!vehicleExists)
+            var vehicle = await _context.Vehicles.FindAsync(dto.VehicleId.Value);
+            if (vehicle == null)
             {
                 return BadRequest($"Vehicle with ID {dto.VehicleId.Value} not found.");
             }
-            proposition.VehicleId = dto.VehicleId.Value;
+            proposition.Vehicle = vehicle;
         }
 
         if (dto.Score.HasValue)
@@ -181,16 +191,16 @@ public class VehiclePropositionsController : ControllerBase
     /// <summary>
     /// Supprime toutes les propositions pour une intervention spécifique
     /// </summary>
-    [HttpDelete("intervention/{interventionId}")]
-    public async Task<IActionResult> DeletePropositionsByIntervention(Guid interventionId)
+    [HttpDelete("incident/{incidentId}")]
+    public async Task<IActionResult> DeletePropositionsByIncident(Guid incidentId)
     {
         var propositions = await _context.VehiclePropositions
-            .Where(p => p.InterventionId == interventionId)
+            .Where(p => p.Incident.Id == incidentId)
             .ToListAsync();
 
         if (!propositions.Any())
         {
-            return NotFound($"No propositions found for intervention {interventionId}");
+            return NotFound($"No propositions found for incident {incidentId}");
         }
 
         _context.VehiclePropositions.RemoveRange(propositions);

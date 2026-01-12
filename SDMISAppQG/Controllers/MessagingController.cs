@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SDMISAppQG.Infrastructure.Services.RabbitMQ;
 using SDMISAppQG.Models.Messaging;
+using SDMISAppQG.Database;
 
 namespace SDMISAppQG.Controllers;
 
@@ -12,11 +14,13 @@ public class MessagingController : ControllerBase
 {
     private readonly IRabbitMQService _rabbitMQService;
     private readonly ILogger<MessagingController> _logger;
+    private readonly AppDbContext _context;
 
-    public MessagingController(IRabbitMQService rabbitMQService, ILogger<MessagingController> logger)
+    public MessagingController(IRabbitMQService rabbitMQService, ILogger<MessagingController> logger, AppDbContext context)
     {
         _rabbitMQService = rabbitMQService;
         _logger = logger;
+        _context = context;
     }
 
     /// <summary>
@@ -52,18 +56,40 @@ public class MessagingController : ControllerBase
     /// <summary>
     /// Send an incident notification to Java service
     /// </summary>
-    [HttpPost("incident-notification")]
-    public IActionResult SendIncidentNotification([FromBody] IncidentNotification incident)
+    [HttpPost("incident-notification/{incidentId}")]
+    public IActionResult SendIncidentNotification(Guid incidentId)
     {
+        var incident = _context.Incidents
+            .Include(i => i.Type)
+            .FirstOrDefault(i => i.Id == incidentId);
+        if (incident == null)
+        {
+            return NotFound(new { success = false, message = "Incident not found" });
+        }
+        var incidentNotification = new IncidentNotification
+        {
+            IncidentId = incident.Id,
+            Status = incident.Status.ToString(),
+            Description = incident.Description ?? string.Empty,
+            CreatedAt = DateTime.UtcNow,
+            Latitude = incident.Location.Coordinate[1],
+            Longitude = incident.Location.Coordinate[0],
+            Type = new IncidentTypeInfo
+            {
+                id = incident.Type?.Id ?? Guid.Empty,
+                label = incident.Type?.Label ?? string.Empty
+            }
+        };
+
         try
         {
             var envelope = new MessageEnvelope<IncidentNotification>
             {
-                Data = incident
+                Data = incidentNotification
             };
 
             _rabbitMQService.PublishToJava(envelope);
-            _logger.LogInformation("Incident notification sent for incident {IncidentId}", incident.IncidentId);
+            _logger.LogInformation("Incident notification sent for incident {IncidentId}", incident.Id);
 
             return Ok(new
             {

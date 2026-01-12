@@ -2,7 +2,6 @@ using NetTopologySuite.Geometries;
 using SDMISAppQG.Models.Entities;
 using SDMISAppQG.Models.Enums.Incidents;
 using SDMISTests.Fixtures;
-using Xunit;
 
 namespace SDMISTests.Integration;
 

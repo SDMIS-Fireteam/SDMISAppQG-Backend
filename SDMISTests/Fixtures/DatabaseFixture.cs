@@ -17,24 +17,24 @@ public class DatabaseFixture : IDisposable {
          DotNetEnv.Env.Load(envPath);
       }
 
-              var db = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "sdmis_db";
-              var user = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "sdmis";
-              var pass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "sdmis";
-              var port = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
-              var host = "localhost"; // Local tests assume localhost
-      
-              var connectionString = $"Host={host};Port={port};Database={db};Username={user};Password={pass}";
-      
-              var dataSourceBuilder = new Npgsql.NpgsqlDataSourceBuilder(connectionString);
-              dataSourceBuilder.UseJsonNet();
-              dataSourceBuilder.UseNetTopologySuite();
-              var dataSource = dataSourceBuilder.Build();
-      
-              var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-              optionsBuilder.UseNpgsql(dataSource,
-                  o => o.UseNetTopologySuite());
-      
-              Context = new AppDbContext(optionsBuilder.Options);
+      var db = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "sdmis_db";
+      var user = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "sdmis";
+      var pass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "sdmis";
+      var port = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
+      var host = "localhost"; // Local tests assume localhost
+
+      var connectionString = $"Host={host};Port={port};Database={db};Username={user};Password={pass}";
+
+      var dataSourceBuilder = new Npgsql.NpgsqlDataSourceBuilder(connectionString);
+      dataSourceBuilder.UseJsonNet();
+      dataSourceBuilder.UseNetTopologySuite();
+      var dataSource = dataSourceBuilder.Build();
+
+      var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+      optionsBuilder.UseNpgsql(dataSource,
+          o => o.UseNetTopologySuite());
+
+      Context = new AppDbContext(optionsBuilder.Options);
       // Ensure database exists (optional, but good for local checks)
       // Context.Database.EnsureCreated(); // Do NOT use this on production/shared DBs blindly, but fine for local dev if carefully used.
       // Since we use existing local DB, we assume it's migrated.

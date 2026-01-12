@@ -1,4 +1,3 @@
-
 name: CI
 
 on:
@@ -19,16 +18,67 @@ jobs:
         dotnet-version: '10.0.x'
     
     - name: Restore dependencies
-      run: dotnet restore SDMISAppQG/SDMISAppQG.csproj
+      run: |
+        dotnet restore SDMISAppQG/SDMISAppQG.csproj
+        dotnet restore SDMISTests/SDMISTests.csproj
     
     - name: Check code formatting
       run: dotnet format SDMISAppQG/SDMISAppQG.csproj    
-    - name: Build project
-      run: dotnet build SDMISAppQG/SDMISAppQG.csproj --configuration Release --no-restore
+    
+    - name: Build projects
+      run: |
+        dotnet build SDMISAppQG/SDMISAppQG.csproj --configuration Release --no-restore
+        dotnet build SDMISTests/SDMISTests.csproj --configuration Release --no-restore
+
+  tests:
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+    services:
+      db:
+        image: postgis/postgis:latest
+        env:
+          POSTGRES_DB: sdmis_db
+          POSTGRES_USER: sdmis
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+    
+    - name: Install dotnet-ef
+      run: dotnet tool install --global dotnet-ef
+    
+    - name: Run migrations
+      run: dotnet ef database update --project SDMISAppQG/SDMISAppQG.csproj --startup-project SDMISAppQG/SDMISAppQG.csproj
+      env:
+        ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=sdmis_db;Username=sdmis;Password=password
+    
+    - name: Run tests
+      run: dotnet test SDMISTests/SDMISTests.csproj --configuration Release
+      env:
+        POSTGRES_DB: sdmis_db
+        POSTGRES_USER: sdmis
+        POSTGRES_PASSWORD: password
+        POSTGRES_PORT: 5432
 
   docker-build:
     runs-on: ubuntu-latest
-    needs: lint-and-build
+    needs: tests
     
     steps:
     - name: Checkout code

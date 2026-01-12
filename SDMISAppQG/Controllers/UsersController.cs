@@ -203,4 +203,27 @@ public class UsersController : ControllerBase {
 
       return NoContent();
    }
+
+   /// <summary>
+   /// Retrieves the vehicle where the user is currently assigned as a passenger.
+   /// </summary>
+   /// <param name="id">The unique identifier of the user.</param>
+   /// <returns>The VehicleEntity or NotFound.</returns>
+   [HttpGet("{id}/vehicle")]
+   public async Task<ActionResult<VehicleEntity>> GetCurrentVehicle(Guid id) {
+      // Check if user exists first? Optional, but good practice.
+      // Assuming if passenger record exists, user exists (FK constraint).
+      
+      var passenger = await _context.Passengers
+          .Include(p => p.Vehicle)
+          .ThenInclude(v => v.Type)
+          .AsNoTracking()
+          .FirstOrDefaultAsync(p => p.UserId == id);
+
+      if (passenger == null || passenger.Vehicle == null) {
+         return NotFound("User is not currently assigned to any vehicle.");
+      }
+
+      return Ok(passenger.Vehicle);
+   }
 }

@@ -55,6 +55,10 @@ public class PassengersController : ControllerBase {
          return BadRequest($"User with ID {dto.UserId} not found.");
       }
 
+      if (user.Role != SDMISAppQG.Models.Enums.UserRole.Firefighter) {
+         return BadRequest("Only users with the Firefighter role can be assigned to a vehicle.");
+      }
+
       // Check if user is already in the vehicle (or any vehicle? Business rule unclear, assuming can only be in one place generally, but strictly duplicate in same vehicle is bad)
       var exists = await _context.Passengers.AnyAsync(p => p.VehicleId == dto.VehicleId && p.UserId == dto.UserId);
       if (exists) {

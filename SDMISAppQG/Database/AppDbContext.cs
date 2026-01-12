@@ -18,6 +18,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
    public DbSet<TelemetryLogsEntity> TelemetryLogs { get; set; }
    public DbSet<Assigned> Assignees { get; set; }
    public DbSet<VehiclePropositionEntity> VehiclePropositions { get; set; }
+   public DbSet<PassengerEntity> Passengers { get; set; }
 
    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
       optionsBuilder.ConfigureWarnings(warnings =>

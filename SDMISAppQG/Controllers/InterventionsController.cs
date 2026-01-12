@@ -247,6 +247,14 @@ public class InterventionsController : ControllerBase
             assignment.UpdatedAt = DateTime.UtcNow;
         }
 
+        // Mettre à jour le statut de l'incident associé
+        var incident = await _context.Incidents.FindAsync(intervention.IncidentId);
+        if (incident != null)
+        {
+            incident.Status = SDMISAppQG.Models.Enums.Incidents.IncidentStatus.Completed;
+            incident.UpdatedAt = DateTime.UtcNow;
+        }
+
         await _context.SaveChangesAsync();
 
         return Ok(new
@@ -254,7 +262,8 @@ public class InterventionsController : ControllerBase
             message = "Intervention completed successfully",
             interventionId = intervention.Id,
             completedAt = intervention.End,
-            assignmentsCompleted = assignments.Count
+            assignmentsCompleted = assignments.Count,
+            incidentStatus = incident?.Status
         });
     }
 

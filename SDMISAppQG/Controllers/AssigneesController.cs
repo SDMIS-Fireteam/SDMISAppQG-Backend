@@ -13,10 +13,12 @@ namespace SDMISAppQG.Controllers;
 public class AssigneesController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly InterventionsController _interventionsController;
 
-    public AssigneesController(AppDbContext context)
+    public AssigneesController(AppDbContext context, InterventionsController interventionsController)
     {
         _context = context;
+        _interventionsController = interventionsController;
     }
 
     /// <summary>
@@ -156,6 +158,40 @@ public class AssigneesController : ControllerBase
             throw;
         }
 
+        return NoContent();
+    }
+
+    [HttpPut("{id}/complete")]
+    public async Task<IActionResult> CompleteAssignment(Guid id)
+    {
+        var assignee = await _context.Assignees.FindAsync(id);
+        if (assignee == null)
+        {
+            return NotFound();
+        }
+
+        assignee.End = DateTime.UtcNow;
+        assignee.UpdatedAt = DateTime.UtcNow;
+
+        var hasNotCompletedAssignments = await _context.Assignees
+            .AnyAsync(a => a.InterventionId == assignee.InterventionId && a.End == null && a.Id != id);
+
+        if (!hasNotCompletedAssignments)
+        {
+            await _interventionsController.CompleteIntervention(assignee.InterventionId);
+        }
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await AssigneeExists(id))
+            {
+                return NotFound();
+            }
+            throw;
+        }
         return NoContent();
     }
 

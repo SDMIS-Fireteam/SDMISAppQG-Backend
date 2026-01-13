@@ -1,7 +1,7 @@
-﻿using SDMISAppQG.Models.Entities;
+﻿using SDMISAppQG.Models.DTOs;
 
 namespace SDMISAppQG.Interfaces.Hubs;
 
 public interface IGpsClient {
-   Task ReceivePosition(VehicleEntity vehicle);
+   Task ReceivePosition(VehicleDto vehicle);
 }

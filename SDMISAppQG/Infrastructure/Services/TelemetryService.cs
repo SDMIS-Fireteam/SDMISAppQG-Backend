@@ -5,6 +5,7 @@ using SDMISAppQG.Database;
 using SDMISAppQG.Hubs;
 using SDMISAppQG.Interfaces.Hubs;
 using SDMISAppQG.Models;
+using SDMISAppQG.Models.DTOs;
 using SDMISAppQG.Models.Entities;
 using SDMISAppQG.Models.Telemetry;
 
@@ -53,7 +54,10 @@ public class TelemetryService {
       using var scope = _serviceScopeFactory.CreateScope();
       var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-      VehicleEntity? vehicle = await context.Vehicles.FirstOrDefaultAsync(v => v.IdHardware == data.IdHardware);
+      VehicleEntity? vehicle = await context.Vehicles
+          .Include(v => v.Type)
+          .FirstOrDefaultAsync(v => v.IdHardware == data.IdHardware);
+
       if (vehicle is null) {
          _logger.LogWarning("Impossible de diffuser la position: véhicule IdHardware={IdHardware} non trouvé", data.IdHardware);
          return;
@@ -62,7 +66,23 @@ public class TelemetryService {
       Point point = new Point(data.Longitude, data.Latitude) { SRID = 4326 };
       vehicle.LastLocation = point;
 
-      await _gpsHubContext.Clients.All.ReceivePosition(vehicle);
+      var vehicleDto = new VehicleDto {
+         Id = vehicle.Id,
+         CreatedAt = vehicle.CreatedAt,
+         UpdatedAt = vehicle.UpdatedAt,
+         IdHardware = vehicle.IdHardware,
+         Latitude = data.Latitude,
+         Longitude = data.Longitude,
+         Availability = vehicle.Availability,
+         UnavailabilityReason = vehicle.UnavailabilityReason,
+         Fuel = vehicle.Fuel,
+         Consumable = vehicle.Consumable,
+         PassengerCount = vehicle.PassengerCount,
+         TypeId = vehicle.Type.Id,
+         TypeName = vehicle.Type.Label
+      };
+
+      await _gpsHubContext.Clients.All.ReceivePosition(vehicleDto);
    }
 
    private async Task SaveTelemetryToDatabase(TelemetryData data) {

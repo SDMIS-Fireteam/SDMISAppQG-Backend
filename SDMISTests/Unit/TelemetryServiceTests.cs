@@ -7,6 +7,7 @@ using SDMISAppQG.Database;
 using SDMISAppQG.Hubs;
 using SDMISAppQG.Infrastructure.Services;
 using SDMISAppQG.Interfaces.Hubs;
+using SDMISAppQG.Models.DTOs;
 using SDMISAppQG.Models.Entities;
 using SDMISAppQG.Models.Telemetry;
 using SDMISTests.Fixtures;
@@ -81,7 +82,10 @@ public class TelemetryServiceTests : IClassFixture<DatabaseFixture> {
 
       // Assert
       // 1. Verify Broadcast
-      _mockClient.Verify(c => c.ReceivePosition(vehicle), Times.Once);
+      _mockClient.Verify(c => c.ReceivePosition(It.Is<VehicleDto>(v => 
+          v.Id == vehicle.Id && 
+          v.Latitude == 45.0 && 
+          v.Longitude == 4.0)), Times.Once);
 
       // 2. Verify Database Update
       // Need to reload/refresh entity from DB to see changes
@@ -119,7 +123,7 @@ public class TelemetryServiceTests : IClassFixture<DatabaseFixture> {
 
       // Assert
       // 1. Verify No Broadcast
-      _mockClient.Verify(c => c.ReceivePosition(It.IsAny<VehicleEntity>()), Times.Never);
+      _mockClient.Verify(c => c.ReceivePosition(It.IsAny<VehicleDto>()), Times.Never);
 
       // 2. Verify No Log Created (Hard to verify exact count change in shared DB, but can ensure no log for non-existent vehicle)
       // Since vehicle ID is unknown, we can't query logs by vehicle ID easily unless we assume something.

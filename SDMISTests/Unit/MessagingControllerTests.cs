@@ -1,12 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SDMISAppQG.Controllers;
-using SDMISAppQG.Database;
 using SDMISAppQG.Infrastructure.Services.RabbitMQ;
 using SDMISTests.Fixtures;
-using Xunit;
 
 namespace SDMISTests.Unit;
 

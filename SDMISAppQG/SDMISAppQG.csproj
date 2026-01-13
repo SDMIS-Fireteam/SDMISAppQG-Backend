@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="Infrastructure\Workers\" />
     <Folder Include="Modules\" />
     <Folder Include="Services\" />
   </ItemGroup>

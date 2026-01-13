@@ -81,7 +81,7 @@ public class TelemetryServiceTests : IClassFixture<DatabaseFixture> {
 
       // Assert
       // 1. Verify Broadcast
-      _mockClient.Verify(c => c.ReceivePosition(vehicle.Id, 45.0, 4.0), Times.Once);
+      _mockClient.Verify(c => c.ReceivePosition(vehicle), Times.Once);
 
       // 2. Verify Database Update
       // Need to reload/refresh entity from DB to see changes
@@ -119,7 +119,7 @@ public class TelemetryServiceTests : IClassFixture<DatabaseFixture> {
 
       // Assert
       // 1. Verify No Broadcast
-      _mockClient.Verify(c => c.ReceivePosition(It.IsAny<Guid>(), It.IsAny<double>(), It.IsAny<double>()), Times.Never);
+      _mockClient.Verify(c => c.ReceivePosition(It.IsAny<VehicleEntity>()), Times.Never);
 
       // 2. Verify No Log Created (Hard to verify exact count change in shared DB, but can ensure no log for non-existent vehicle)
       // Since vehicle ID is unknown, we can't query logs by vehicle ID easily unless we assume something.

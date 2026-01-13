@@ -7,7 +7,6 @@ using SDMISAppQG.Models.Entities;
 using SDMISAppQG.Models.Enums.Incidents;
 using SDMISAppQG.Models.Enums.Vehicle;
 using SDMISTests.Fixtures;
-using Xunit;
 
 namespace SDMISTests.Integration;
 

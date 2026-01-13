@@ -1,0 +1,20 @@
+meta {
+  name: Get Vehicles Suggestions
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{api_url}}/api/vehiclePropositions/incident/:incident_id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  incident_id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

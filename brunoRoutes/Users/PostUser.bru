@@ -1,0 +1,26 @@
+meta {
+  name: PostUser
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{api_url}}/api/users
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "keyCloakId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "email": "user@example.com",
+    "username": "johndoe",
+    "firstname": "John",
+    "lastname": "Doe"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

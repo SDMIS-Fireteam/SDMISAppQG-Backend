@@ -1,0 +1,38 @@
+meta {
+  name: Create incident
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{api_url}}/api/incidents
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "type": {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "label": "Incendie",
+      "category": "Feu"
+    },
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        4.8357,
+        45.7640
+      ]
+    },
+    "severity": 0,
+    "priority": 8.5,
+    "status": 0,
+    "source": 0,
+    "description": "Incendie signalé dans un bâtiment résidentiel"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

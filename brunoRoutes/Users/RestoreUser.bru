@@ -1,0 +1,16 @@
+meta {
+  name: RestoreUser
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{api_url}}/api/users/3fa85f64-5717-4562-b3fc-2c963f66afa6/restore
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

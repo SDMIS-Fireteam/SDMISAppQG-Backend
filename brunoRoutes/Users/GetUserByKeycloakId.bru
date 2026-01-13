@@ -1,13 +1,17 @@
 meta {
-  name: GetIncidents
+  name: GetUserByKeycloakId
   type: http
   seq: 4
 }
 
 get {
-  url: {{api_url}}/api/incidents
+  url: {{api_url}}/api/users/keycloak/:keycloak_id
   body: none
   auth: inherit
+}
+
+params:path {
+  keycloak_id: 
 }
 
 settings {

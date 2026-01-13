@@ -1,13 +1,17 @@
 meta {
   name: GetIncidentById
   type: http
-  seq: 2
+  seq: 3
 }
 
 get {
-  url: {{api_url}}/api/incidents/00000000-0000-0000-0000-000000000001
+  url: {{api_url}}/api/incidents/:incident_id
   body: none
   auth: inherit
+}
+
+params:path {
+  incident_id: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbbs
 }
 
 settings {

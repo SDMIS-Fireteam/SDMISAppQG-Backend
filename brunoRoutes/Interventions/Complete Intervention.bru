@@ -1,0 +1,20 @@
+meta {
+  name: Complete Intervention
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{api_url}}/interventions/:intervention_id/complete
+  body: none
+  auth: inherit
+}
+
+params:path {
+  intervention_id: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,20 @@
+meta {
+  name: GetUserVehicle
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{api_url}}/api/passengers/user/:user_id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  user_id: 6b17457b-dfd9-47d2-838f-e8e74aacb3c5
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

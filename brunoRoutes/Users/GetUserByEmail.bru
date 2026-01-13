@@ -1,11 +1,11 @@
 meta {
-  name: GetIncidents
+  name: GetUserByEmail
   type: http
-  seq: 4
+  seq: 3
 }
 
 get {
-  url: {{api_url}}/api/incidents
+  url: {{api_url}}/api/users/email/user@example.com
   body: none
   auth: inherit
 }

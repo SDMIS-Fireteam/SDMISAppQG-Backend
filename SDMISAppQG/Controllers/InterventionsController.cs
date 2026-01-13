@@ -152,6 +152,14 @@ public class InterventionsController : ControllerBase {
          return NotFound($"Vehicle with ID {vehicleId} not found.");
       }
 
+      // Vérifier si le véhicule est déjà assigné à n'importe quelle autre intervention en cours
+      var isVehicleBusy = await _context.Assignees
+          .AnyAsync(a => a.VehicleId == vehicleId && a.End == null);
+
+      if (isVehicleBusy) {
+         return BadRequest($"Vehicle with ID {vehicleId} is already assigned to another ongoing intervention.");
+      }
+
       var intervention = await _context.Interventions
           .FirstOrDefaultAsync(i => i.IncidentId == incidentId && i.Status != InterventionStatus.Completed);
 
@@ -165,6 +173,14 @@ public class InterventionsController : ControllerBase {
          };
 
          _context.Interventions.Add(intervention);
+      } else {
+         // Vérifier si le véhicule est déjà assigné à cette intervention
+         var alreadyAssigned = await _context.Assignees
+             .AnyAsync(a => a.InterventionId == intervention.Id && a.VehicleId == vehicleId && a.End == null);
+
+         if (alreadyAssigned) {
+            return BadRequest($"Vehicle with ID {vehicleId} is already assigned to an ongoing intervention for this incident.");
+         }
       }
 
       // Créer l'itinéraire au format MapBox avec waypoints

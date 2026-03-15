@@ -25,7 +25,26 @@ public class VehiclesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<VehicleEntity>>> GetVehicles()
     {
-        return await _context.Vehicles.Include(v => v.Type).ToListAsync();
+        var vehicles = await _context.Vehicles.Include(v => v.Type).ToListAsync();
+        
+        // Définir les compatibilités par défaut si non définies (logique métier)
+        var incidentTypes = await _context.IncidentTypes.ToListAsync();
+        var feuId = incidentTypes.FirstOrDefault(t => t.Category == "Feu")?.Id;
+        var accidentId = incidentTypes.FirstOrDefault(t => t.Category == "Circulation")?.Id;
+        var medicalId = incidentTypes.FirstOrDefault(t => t.Category == "Médical")?.Id;
+
+        foreach(var v in vehicles.Where(v => v.Type != null)) {
+            if (v.Type.Label.Contains("FPT") || v.Type.Label.Contains("Pompe")) {
+                if (feuId.HasValue) v.Type.CompatibleIncidentIds.Add(feuId.Value);
+                if (accidentId.HasValue) v.Type.CompatibleIncidentIds.Add(accidentId.Value);
+            } 
+            else if (v.Type.Label.Contains("VSAV") || v.Type.Label.Contains("Ambulance")) {
+                if (medicalId.HasValue) v.Type.CompatibleIncidentIds.Add(medicalId.Value);
+                if (accidentId.HasValue) v.Type.CompatibleIncidentIds.Add(accidentId.Value);
+            }
+        }
+
+        return Ok(vehicles);
     }
 
     /// <summary>

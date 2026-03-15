@@ -10,6 +10,7 @@ namespace SDMISAppQG.Database;
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options) {
 
    public DbSet<VehicleEntity> Vehicles { get; set; }
+   public DbSet<StationEntity> Stations { get; set; }
    public DbSet<IncidentEntity> Incidents { get; set; }
    public DbSet<InterventionEntity> Interventions { get; set; }
    public DbSet<UserEntity> Users { get; set; }
@@ -95,10 +96,38 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
           }
       );
 
+      // Seed Stations
+      var station1 = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+      var station2 = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
+      var station3 = Guid.Parse("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee");
+
+      modelBuilder.Entity<StationEntity>().HasData(
+          new StationEntity {
+             Id = station1,
+             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+             Name = "Caserne Lyon-Confluence",
+             Location = new Point(4.8200, 45.7400) { SRID = 4326 }
+          },
+          new StationEntity {
+             Id = station2,
+             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+             Name = "Caserne Lyon-Part-Dieu",
+             Location = new Point(4.8600, 45.7600) { SRID = 4326 }
+          },
+          new StationEntity {
+             Id = station3,
+             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+             Name = "Caserne Villeurbanne",
+             Location = new Point(4.8300, 45.7700) { SRID = 4326 }
+          }
+      );
+
       // Seed Vehicles
       var vehicle1 = Guid.Parse("77777777-7777-7777-7777-777777777777");
       var vehicle2 = Guid.Parse("88888888-8888-8888-8888-888888888888");
       var vehicle3 = Guid.Parse("99999999-9999-9999-9999-999999999999");
+      var vehicle4 = Guid.Parse("44444444-4444-4444-4444-444444444444");
+      var vehicle5 = Guid.Parse("55555555-5555-5555-5555-555555555555");
 
       modelBuilder.Entity<VehicleEntity>().HasData(
           new {
@@ -136,6 +165,30 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
              Fuel = 60.5f,
              Consumable = (string?)null,
              PassengerCount = (int?)3
+          },
+          new {
+             Id = vehicle4,
+             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+             IdHardware = 4,
+             TypeId = vehicleType1,
+             LastLocation = new Point(4.8200, 45.7400) { SRID = 4326 },
+             Availability = VehicleAvailability.Available,
+             UnavailabilityReason = (VehicleUnavailabilityReason?)null,
+             Fuel = 100.0f,
+             Consumable = "{\"water\": \"100%\", \"foam\": \"100%\"}",
+             PassengerCount = (int?)6
+          },
+          new {
+             Id = vehicle5,
+             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+             IdHardware = 5,
+             TypeId = vehicleType2,
+             LastLocation = new Point(4.8600, 45.7600) { SRID = 4326 },
+             Availability = VehicleAvailability.Available,
+             UnavailabilityReason = (VehicleUnavailabilityReason?)null,
+             Fuel = 100.0f,
+             Consumable = "{\"water\": \"100%\", \"foam\": \"100%\"}",
+             PassengerCount = (int?)4
           }
       );
 

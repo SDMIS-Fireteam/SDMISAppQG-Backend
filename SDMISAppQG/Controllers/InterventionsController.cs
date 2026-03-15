@@ -6,6 +6,7 @@ using SDMISAppQG.Infrastructure.Services;
 using SDMISAppQG.Models.DTOs;
 using SDMISAppQG.Models.Entities;
 using SDMISAppQG.Models.Enums;
+using SDMISAppQG.Models.Enums.Vehicle;
 
 namespace SDMISAppQG.Controllers;
 
@@ -204,6 +205,10 @@ public class InterventionsController : ControllerBase {
       };
 
       _context.Assignees.Add(assigment);
+
+      // Update vehicle status to Ongoing
+      vehicle.Availability = VehicleAvailability.Ongoing;
+      vehicle.UpdatedAt = DateTime.UtcNow;
 
       await _context.SaveChangesAsync();
       return NoContent();

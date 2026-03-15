@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SDMISAppQG.Database;
 using SDMISAppQG.Models.Enums;
+using SDMISAppQG.Models.Enums.Vehicle;
 
 namespace SDMISAppQG.Infrastructure.Services;
 
@@ -34,6 +35,13 @@ public class InterventionService {
       foreach (var assignment in assignments) {
          assignment.End = DateTime.UtcNow;
          assignment.UpdatedAt = DateTime.UtcNow;
+
+         // Free up the vehicle
+         var vehicle = await _context.Vehicles.FindAsync(assignment.VehicleId);
+         if (vehicle != null) {
+            vehicle.Availability = VehicleAvailability.Available;
+            vehicle.UpdatedAt = DateTime.UtcNow;
+         }
       }
 
       // Update associated Incident

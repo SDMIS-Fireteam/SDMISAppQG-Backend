@@ -16,6 +16,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - sdmis-network
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -32,6 +34,8 @@ services:
       retries: 5
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - sdmis-network
   sdmisappqg:
     image: ${DOCKER_REGISTRY-}sdmisappqg
     container_name: sdmisappqg-backend
@@ -49,6 +53,13 @@ services:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};SSL Mode=Disable
     ports:
       - "5078:8080"
+    networks:
+      - sdmis-network
 volumes:
   pgdata:
   rabbitmq_data:
+networks:
+  sdmis-network:
+    external: true
+    name: sdmisappqg-backend_default
+  

@@ -83,9 +83,7 @@ jobs:
         dotnet build SDMISAppQG/SDMISAppQG.csproj --configuration Release --no-restore
         
         # 3. Tests
-        dotnet test SDMISTests/SDMISTests.csproj --configuration Release --no-build \
-          --collect:"XPlat Code Coverage" \
-          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        dotnet test SDMISTests/SDMISTests.csproj --configuration Release --collect:"XPlat Code Coverage"
         
         # 4. Finalisation Sonar
         dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"

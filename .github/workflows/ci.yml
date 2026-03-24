@@ -3,14 +3,12 @@ name: CI
 on:
   push:
     branches: [ master ]
-  pull_request:
-    types: [opened, synchronize, reopened]
 
 jobs:
   build-test-analyze:
     runs-on: ubuntu-latest
     
-    # On définit les services ici pour qu'ils soient dispos pendant l'analyse
+    # Tes services indispensables pour les migrations et les tests
     services:
       db:
         image: postgis/postgis:latest
@@ -34,8 +32,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0 # Important pour SonarQube (historique Git)
-
+        fetch-depth: 0 
+    
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
@@ -50,7 +48,6 @@ jobs:
     - name: Install Tools
       run: |
         dotnet tool install --global dotnet-sonarscanner
-        dotnet tool install --global dotnet-coverage
         dotnet tool install --global dotnet-ef
 
     - name: Restore dependencies
@@ -59,37 +56,44 @@ jobs:
         dotnet restore SDMISTests/SDMISTests.csproj
     
     - name: Check code formatting
-      run: dotnet format SDMISAppQG/SDMISAppQG.csproj
+      # Ton étape originale de formatage
+      run: dotnet format SDMISAppQG/SDMISAppQG.csproj    
 
     - name: Run migrations
+      # Ton étape de migration (nécessite la DB lancée en service plus haut)
       run: dotnet ef database update --project SDMISAppQG/SDMISAppQG.csproj --startup-project SDMISAppQG/SDMISAppQG.csproj
       env:
         ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=sdmis_db;Username=sdmis;Password=password
-
+    
     - name: Build and Analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        # On ajoute la connexion DB ici aussi pour les tests d'intégration
+        ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=sdmis_db;Username=sdmis;Password=password
       run: |
-        # 1. Début de l'analyse Sonar
+        # 1. Initialisation Sonar (avec chemin vers le rapport OpenCover)
         dotnet-sonarscanner begin /k:"SDMISAppQG-Backend" \
           /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
           /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
           /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
           /d:sonar.scanner.skipDotnetInstall=true
-
-        # 2. Build de l'application
+        
+        # 2. Build
         dotnet build SDMISAppQG/SDMISAppQG.csproj --configuration Release --no-restore
-
-        # 3. Exécution des tests avec collecte de couverture
-        dotnet-coverage collect "dotnet test SDMISTests/SDMISTests.csproj --configuration Release --no-build" -f xml -o "coverage.xml"
-
-        # 4. Fin de l'analyse et envoi des résultats
+        
+        # 3. Tests
+        dotnet test SDMISTests/SDMISTests.csproj --configuration Release --no-build \
+          --collect:"XPlat Code Coverage" \
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        
+        # 4. Finalisation Sonar
         dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
   docker-build:
     runs-on: ubuntu-latest
     needs: build-test-analyze
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4

@@ -19,7 +19,7 @@ public class DatabaseFixture : IDisposable {
 
       var db = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "sdmis_db";
       var user = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "sdmis";
-      var pass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "sdmis";
+      var pass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password";
       var port = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
       var host = "localhost"; // Local tests assume localhost
 

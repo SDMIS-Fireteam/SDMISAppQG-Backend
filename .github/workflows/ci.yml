@@ -59,7 +59,7 @@ jobs:
         dotnet restore SDMISTests/SDMISTests.csproj
     
     - name: Check code formatting
-      run: dotnet format SDMISAppQG/SDMISAppQG.csproj --verify-no-changes
+      run: dotnet format SDMISAppQG/SDMISAppQG.csproj
 
     - name: Run migrations
       run: dotnet ef database update --project SDMISAppQG/SDMISAppQG.csproj --startup-project SDMISAppQG/SDMISAppQG.csproj

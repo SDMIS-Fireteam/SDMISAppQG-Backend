@@ -75,7 +75,7 @@ jobs:
         dotnet-sonarscanner begin /k:"SDMISAppQG-Backend" \
           /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
           /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
-          /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml \
+          /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
           /d:sonar.scanner.skipDotnetInstall=true
 
         # 2. Build de l'application
